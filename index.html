@@ -8,13 +8,16 @@
         @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Comic+Neue:wght@700&family=Delius&family=Fredoka+One&family=Mali:wght@600&family=Nunito:wght@800&family=Patrick+Hand&family=Quicksand:wght@700&family=Short+Stack&family=Sniglet&display=swap');
 
         :root {
-            /* Default Theme 1 (Jungle) Variables */
+            /* Default Theme 1 Variables */
             --primary-dark: #2d6a4f;
             --primary-light: #52b788;
             --secondary-dark: #1b4332;
             --secondary-light: #74c69d;
             --accent-light: #ffffff;
             --accent-gold: #ffb703;
+            --zone-left-bg: rgba(45, 106, 79, 0.75);
+            --zone-right-bg: rgba(27, 67, 50, 0.75);
+            --separator-glow: #ffb703;
         }
 
         * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
@@ -22,14 +25,23 @@
         body {
             font-family: 'Fredoka One', cursive, sans-serif;
             background-color: #1a3a2a; color: #333; overflow: hidden;
-            width: 100vw; height: 100vh;
+            width: 100vw; height: 100vh; margin: 0;
         }
 
         /* Video & Image Background Managers */
         .bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; object-fit: cover; background-size: cover; background-position: center;
+            z-index: -2; object-fit: cover; background-size: cover; background-position: center;
         }
+
+        /* In-Game Background Dimmer */
+        #bg-dimmer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.65); z-index: -1;
+            opacity: 0; transition: opacity 0.8s ease; pointer-events: none;
+        }
+
+        #game-stage.is-playing #bg-dimmer { opacity: 1; }
 
         /* Homepage Styling */
         #homepage-screen {
@@ -63,10 +75,7 @@
         }
 
         /* Application Container */
-        #app-container {
-            position: relative; width: 100%; height: 100%; display: flex; flex-direction: column;
-            background: transparent;
-        }
+        #app-container { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; background: transparent; }
 
         header {
             background: rgba(255, 255, 255, 0.9); border-bottom: 4px solid rgba(255,255,255,0.4);
@@ -93,15 +102,29 @@
         .chunky-btn.gold-btn:active { box-shadow: 0 0px 0 #d4a373, 0 5px 10px rgba(0,0,0,0.3); }
         .chunky-btn.huge { font-size: 28px; padding: 20px 40px; border-radius: 24px; box-shadow: 0 12px 0 var(--primary-dark), 0 20px 30px rgba(0,0,0,0.3);}
         .chunky-btn.huge:active { transform: translateY(12px); box-shadow: 0 0px 0 var(--primary-dark), 0 10px 15px rgba(0,0,0,0.3); }
-        
-        .start-overlay-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 60; font-size: 40px; padding: 25px 60px; border-radius: 30px; box-shadow: 0 15px 0 var(--primary-dark), 0 30px 40px rgba(0,0,0,0.5); }
-        .start-overlay-btn:active { transform: translate(-50%, calc(-50% + 15px)); box-shadow: 0 0px 0 var(--primary-dark), 0 15px 20px rgba(0,0,0,0.5); }
 
         #game-stage { flex: 1; display: flex; position: relative; width: 100%; height: calc(100% - 78px); }
 
-        .game-zone { flex: 1; position: relative; height: 100%; display: flex; flex-direction: column; overflow: hidden; transition: filter 0.5s ease; }
-        .game-zone:nth-child(2) { border-left: 6px dashed rgba(255,255,255,0.4); background: rgba(0, 0, 0, 0.15); }
+        /* Dynamic Game Zones (Dimming & Glowing Line) */
+        .game-zone { 
+            flex: 1; position: relative; height: 100%; display: flex; flex-direction: column; overflow: hidden; 
+            transition: background-color 0.8s ease, filter 0.5s ease, box-shadow 0.8s ease, border-color 0.8s ease; 
+            background-color: transparent;
+        }
+        
+        #zone-right { border-left: 6px solid transparent; }
         .game-zone.dimmed { filter: grayscale(100%) brightness(40%); pointer-events: none; }
+
+        /* When single player mode is active */
+        #game-stage.is-playing:not(.team-mode) #zone-left { background-color: rgba(0,0,0,0.3); }
+
+        /* When team mode is active */
+        #game-stage.is-playing.team-mode #zone-left { background-color: var(--zone-left-bg); }
+        #game-stage.is-playing.team-mode #zone-right {
+            background-color: var(--zone-right-bg);
+            border-left: 6px solid var(--separator-glow);
+            box-shadow: -5px 0 30px var(--separator-glow);
+        }
 
         .game-panel {
             background: rgba(255, 255, 255, 0.95);
@@ -207,7 +230,6 @@
 
     <!-- HOMEPAGE OVERLAY -->
     <div id="homepage-screen">
-        <!-- Media BG Layer -->
         <img id="hp-bg-img" class="bg-layer" src="background.gif">
         <video id="hp-bg-vid" class="bg-layer" autoplay loop muted playsinline style="display:none;"></video>
         
@@ -232,9 +254,10 @@
 
     <!-- MAIN GAME CONTAINER -->
     <div id="app-container">
-        <!-- Game Media BG Layer -->
+        <!-- Game Media BG Layer & Dimmer -->
         <img id="app-bg-img" class="bg-layer" src="background.gif">
         <video id="app-bg-vid" class="bg-layer" autoplay loop muted playsinline style="display:none;"></video>
+        <div id="bg-dimmer"></div>
 
         <header>
             <div class="title-area">
@@ -247,11 +270,17 @@
             </div>
         </header>
 
+        <!-- READY SCREEN OVERLAY -->
+        <div class="feedback-overlay" id="ready-screen" style="z-index: 200;">
+            <div class="game-panel feedback-card" style="padding: 40px 30px;">
+                <div class="feedback-text" id="ready-title" style="color: var(--primary-dark);">Get Ready!</div>
+                <div id="ready-subtitle" style="font-size: 28px; font-weight: bold; color: #555; margin-bottom: 30px;">Challenge Starting</div>
+                <button class="chunky-btn green-btn huge" id="btn-start-match">START GAME</button>
+            </div>
+        </div>
+
         <main id="game-stage">
             
-            <!-- CENTRAL START BUTTON -->
-            <button class="chunky-btn green-btn start-overlay-btn" id="btn-start-match">▶️ START MATCH</button>
-
             <!-- LEFT TEAM ZONE -->
             <div class="game-zone" id="zone-left">
                 <div class="hud-row">
@@ -260,7 +289,7 @@
                 </div>
                 
                 <div class="game-panel">
-                    <div class="answer-box" id="ans-box-left">Press Start!</div>
+                    <div class="answer-box" id="ans-box-left">Waiting to start...</div>
                     <div class="clue-pic-holder" id="clue-holder-left"></div>
                 </div>
 
@@ -274,7 +303,6 @@
                     <button class="chunky-btn" id="btn-reset-left" style="width: 200px;">Clear Paths</button>
                 </div>
 
-                <!-- Left Overlays -->
                 <div class="feedback-overlay" id="sorting-overlay-left" style="z-index: 70;">
                     <div class="game-panel feedback-card" style="max-width: 650px !important;">
                         <div class="feedback-text" style="color: var(--primary-dark);">Sort It!</div>
@@ -318,7 +346,7 @@
                 </div>
                 
                 <div class="game-panel">
-                    <div class="answer-box" id="ans-box-right">Press Start!</div>
+                    <div class="answer-box" id="ans-box-right">Waiting to start...</div>
                     <div class="clue-pic-holder" id="clue-holder-right"></div>
                 </div>
 
@@ -332,7 +360,6 @@
                     <button class="chunky-btn" id="btn-reset-right" style="width: 200px;">Clear Paths</button>
                 </div>
 
-                <!-- Right Overlays -->
                 <div class="feedback-overlay" id="sorting-overlay-right" style="z-index: 70;">
                     <div class="game-panel feedback-card" style="max-width: 650px !important;">
                         <div class="feedback-text" style="color: var(--primary-dark);">Sort It!</div>
@@ -376,7 +403,6 @@
             </div>
 
             <div class="settings-grid">
-                <!-- BLOCK 1: Homepage Customization -->
                 <div class="settings-block">
                     <h3>🏠 Homepage Customization</h3>
                     <div class="form-group">
@@ -403,7 +429,6 @@
                     </div>
                 </div>
 
-                <!-- BLOCK 2: Data Entry -->
                 <div class="settings-block">
                     <h3>➕ Create or Edit Challenge Item</h3>
                     <div class="form-group">
@@ -433,7 +458,6 @@
                     <button class="chunky-btn green-btn btn-sm" id="btn-add-question" style="width: 100%;">➕ Append to Pool</button>
                 </div>
 
-                <!-- BLOCK 3: Visual Themes -->
                 <div class="settings-block">
                     <h3>🎨 Game Theme & Interface</h3>
                     <div class="form-group">
@@ -474,7 +498,6 @@
                     </div>
                 </div>
 
-                <!-- BLOCK 4: Tournament & Cloud Data -->
                 <div class="settings-block">
                     <h3>🏆 Tournament Setup</h3>
                     <div class="form-group">
@@ -518,7 +541,6 @@
                     <button class="chunky-btn btn-sm" id="btn-clear-system" style="background:#e74c3c; margin-top:15px; width:100%;">⚠️ Factory Reset</button>
                 </div>
 
-                <!-- BLOCK 5: Question Table -->
                 <div class="settings-block" style="grid-column: span 2;">
                     <h3>Current Challenge Item Pool (<span id="pool-count-label">0</span> Questions loaded)</h3>
                     <div style="max-height: 350px; overflow-y: auto; margin-top:10px; padding-right: 10px;">
@@ -556,12 +578,12 @@
         ];
 
         const THEME_DATA = {
-            "1": { name: "Jungle", bg: "1", colors: {"--primary-dark": "#2d6a4f", "--primary-light": "#52b788", "--secondary-dark": "#1b4332", "--secondary-light": "#74c69d", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} },
-            "2": { name: "Ocean", bg: "2", colors: {"--primary-dark": "#023e8a", "--primary-light": "#0096c7", "--secondary-dark": "#03045e", "--secondary-light": "#48cae4", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} },
-            "3": { name: "Space", bg: "3", colors: {"--primary-dark": "#3c096c", "--primary-light": "#7b2cbf", "--secondary-dark": "#10002b", "--secondary-light": "#9d4edd", "--accent-light": "#ffffff", "--accent-gold": "#ff9e00"} },
-            "4": { name: "Desert", bg: "4", colors: {"--primary-dark": "#e76f51", "--primary-light": "#f4a261", "--secondary-dark": "#bc4749", "--secondary-light": "#e9c46a", "--accent-light": "#ffffff", "--accent-gold": "#264653"} },
-            "5": { name: "Cyberpunk",bg: "5", colors: {"--primary-dark": "#7209b7", "--primary-light": "#f72585", "--secondary-dark": "#3a0ca3", "--secondary-light": "#4cc9f0", "--accent-light": "#ffffff", "--accent-gold": "#4361ee"} },
-            "6": { name: "Winter", bg: "6", colors: {"--primary-dark": "#2a6f97", "--primary-light": "#61a5c2", "--secondary-dark": "#014f86", "--secondary-light": "#89c2d9", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} }
+            "1": { name: "Jungle", bg: "1", colors: {"--primary-dark": "#2d6a4f", "--primary-light": "#52b788", "--secondary-dark": "#1b4332", "--secondary-light": "#74c69d", "--accent-light": "#ffffff", "--accent-gold": "#ffb703", "--zone-left-bg": "rgba(45, 106, 79, 0.75)", "--zone-right-bg": "rgba(27, 67, 50, 0.75)", "--separator-glow": "#ffb703"} },
+            "2": { name: "Ocean", bg: "2", colors: {"--primary-dark": "#023e8a", "--primary-light": "#0096c7", "--secondary-dark": "#03045e", "--secondary-light": "#48cae4", "--accent-light": "#ffffff", "--accent-gold": "#ffb703", "--zone-left-bg": "rgba(2, 62, 138, 0.75)", "--zone-right-bg": "rgba(3, 4, 94, 0.75)", "--separator-glow": "#48cae4"} },
+            "3": { name: "Space", bg: "3", colors: {"--primary-dark": "#3c096c", "--primary-light": "#7b2cbf", "--secondary-dark": "#10002b", "--secondary-light": "#9d4edd", "--accent-light": "#ffffff", "--accent-gold": "#ff9e00", "--zone-left-bg": "rgba(60, 9, 108, 0.75)", "--zone-right-bg": "rgba(16, 0, 43, 0.75)", "--separator-glow": "#ff9e00"} },
+            "4": { name: "Desert", bg: "4", colors: {"--primary-dark": "#e76f51", "--primary-light": "#f4a261", "--secondary-dark": "#bc4749", "--secondary-light": "#e9c46a", "--accent-light": "#ffffff", "--accent-gold": "#264653", "--zone-left-bg": "rgba(231, 111, 81, 0.75)", "--zone-right-bg": "rgba(188, 71, 73, 0.75)", "--separator-glow": "#ffb703"} },
+            "5": { name: "Cyberpunk",bg: "5", colors: {"--primary-dark": "#7209b7", "--primary-light": "#f72585", "--secondary-dark": "#3a0ca3", "--secondary-light": "#4cc9f0", "--accent-light": "#ffffff", "--accent-gold": "#4361ee", "--zone-left-bg": "rgba(114, 9, 183, 0.75)", "--zone-right-bg": "rgba(58, 12, 163, 0.75)", "--separator-glow": "#f72585"} },
+            "6": { name: "Winter", bg: "6", colors: {"--primary-dark": "#2a6f97", "--primary-light": "#61a5c2", "--secondary-dark": "#014f86", "--secondary-light": "#89c2d9", "--accent-light": "#ffffff", "--accent-gold": "#ffb703", "--zone-left-bg": "rgba(42, 111, 151, 0.75)", "--zone-right-bg": "rgba(1, 79, 134, 0.75)", "--separator-glow": "#ffb703"} }
         };
 
         let questionPool = JSON.parse(localStorage.getItem("jungle_game_pool")) || DEFAULT_QUESTIONS;
@@ -635,28 +657,25 @@
             });
         });
 
-        // Universal Background Renderer (Handles JPG, PNG, GIF, MP4, WEBM)
         function renderMediaBackground(imgElId, vidElId, sourceUrl) {
             const imgEl = document.getElementById(imgElId);
             const vidEl = document.getElementById(vidElId);
             
             if(!sourceUrl) {
-                imgEl.style.backgroundImage = '';
-                vidEl.style.display = 'none'; vidEl.src = '';
+                imgEl.src = ''; imgEl.style.display = 'none';
+                vidEl.src = ''; vidEl.style.display = 'none'; 
                 return;
             }
 
             const isVideo = sourceUrl.match(/\.(mp4|webm|mov|ogg)$/i) || sourceUrl.startsWith('data:video');
             
             if(isVideo) {
-                imgEl.style.backgroundImage = '';
-                vidEl.src = sourceUrl;
-                vidEl.style.display = 'block';
+                imgEl.style.display = 'none'; imgEl.src = '';
+                vidEl.src = sourceUrl; vidEl.style.display = 'block';
                 vidEl.play().catch(e => console.log("Autoplay prevented:", e));
             } else {
-                vidEl.style.display = 'none';
-                vidEl.src = '';
-                imgEl.style.backgroundImage = `url('${sourceUrl}')`;
+                vidEl.style.display = 'none'; vidEl.src = '';
+                imgEl.src = sourceUrl; imgEl.style.display = 'block';
             }
         }
 
@@ -686,7 +705,6 @@
             
             let bgUrl = hpData.bg;
             if(!bgUrl) {
-                // Fallback to game theme
                 const theme = THEME_DATA[currentTheme];
                 bgUrl = customBGs[currentTheme] || (githubBaseUrl ? `${githubBaseUrl}${theme.bg}${themeExt}` : 'background.gif');
             }
@@ -705,7 +723,6 @@
             localStorage.setItem("jungle_game_theme", themeId);
             localStorage.setItem("jungle_game_ext", themeExt);
             
-            // Sync homepage if it relies on default
             if(!hpData.bg) applyHomepageSettings();
         }
 
@@ -758,8 +775,7 @@
             currentMatchFinished = false;
             gameActive = false; 
             
-            document.getElementById('btn-start-match').style.display = 'block';
-            
+            document.getElementById('game-stage').classList.remove('is-playing');
             stopConfettiAnimation('left'); stopConfettiAnimation('right');
             
             ['left', 'right'].forEach(side => {
@@ -785,6 +801,7 @@
             const modeBadgeRight = document.getElementById('mode-badge-right');
             const titleText = document.getElementById('game-title-text');
             const toggleBtn = document.getElementById('btn-toggle-mode');
+            const gameStage = document.getElementById('game-stage');
 
             if(isTeamMode) {
                 zoneRight.style.display = 'flex';
@@ -794,12 +811,14 @@
                 document.getElementById('score-left').innerText = "RACE!";
                 document.getElementById('score-right').innerText = "RACE!";
                 toggleBtn.innerText = "👤 Switch to Solo";
+                gameStage.classList.add('team-mode');
             } else {
                 zoneRight.style.display = 'none';
                 modeBadgeLeft.innerText = "Single Player Mode";
                 titleText.innerText = "Connect & Sort";
                 document.getElementById('score-left').innerText = "Score: 0";
                 toggleBtn.innerText = "👥 Switch to Team Mode";
+                gameStage.classList.remove('team-mode');
             }
         }
 
@@ -817,6 +836,9 @@
             if(numTeams === 1) {
                 isTournamentMode = false; isTeamMode = false;
                 availableQuestions = []; preparePools(); applyLayoutUIModes();
+                document.getElementById('ready-title').innerText = "Solo Challenge";
+                document.getElementById('ready-subtitle').innerText = `${questionsPerMatch} Questions`;
+                document.getElementById('ready-screen').classList.add('active');
                 return;
             }
 
@@ -839,8 +861,7 @@
             if (currentRoundQueue.length === 0) {
                 if (nextRoundQueue.length === 1) {
                     alert(`🏆 ${nextRoundQueue[0].toUpperCase()} IS THE TOURNAMENT CHAMPION! 🏆`);
-                    goHome();
-                    return;
+                    goHome(); return;
                 }
                 currentRoundQueue = [];
                 for (let i = 0; i < nextRoundQueue.length; i += 2) {
@@ -863,6 +884,10 @@
             document.getElementById('mode-badge-left').innerText = currentMatch[0];
             document.getElementById('mode-badge-right').innerText = currentMatch[1];
             document.getElementById('game-title-text').innerText = `🏆 TOURNAMENT: ${currentMatch[0]} vs ${currentMatch[1]}`;
+            
+            document.getElementById('ready-title').innerText = `🏆 TOURNAMENT`;
+            document.getElementById('ready-subtitle').innerText = `${currentMatch[0]} vs ${currentMatch[1]}`;
+            document.getElementById('ready-screen').classList.add('active');
         }
 
         /************************************************************************
@@ -900,6 +925,7 @@
                 if(isTeamMode) {
                     if(currentMatchFinished) return; 
                     currentMatchFinished = true; gameActive = false;
+                    document.getElementById('game-stage').classList.remove('is-playing');
                     
                     const loserSide = side === 'left' ? 'right' : 'left';
                     const teamLabelName = document.getElementById(`mode-badge-${side}`).innerText;
@@ -918,7 +944,12 @@
                     } else {
                         subEl.innerHTML = `<span style="color:var(--primary-dark);">${teamLabelName} Wins!</span>`;
                         replayBtn.style.display = "inline-block"; replayBtn.innerText = "🔄 Replay Race"; 
-                        replayBtn.onclick = () => { preparePools(); applyLayoutUIModes(); };
+                        replayBtn.onclick = () => {
+                            preparePools();
+                            document.getElementById('ready-title').innerText = "Team Race";
+                            document.getElementById('ready-subtitle').innerText = "Team A vs Team B";
+                            document.getElementById('ready-screen').classList.add('active');
+                        };
                     }
                     
                     document.getElementById(`btn-feedback-next-${side}`).style.display = "none";
@@ -929,6 +960,7 @@
 
                 } else {
                     gameActive = false;
+                    document.getElementById('game-stage').classList.remove('is-playing');
                     AudioFX.victory(); triggerConfettiExplosion(side);
                     document.getElementById(`feedback-text-${side}`).innerText = "🏆 Completed!";
                     document.getElementById(`feedback-sub-${side}`).innerHTML = `Final Score: ${sideState.score}`;
@@ -936,7 +968,12 @@
                     
                     const replayBtn = document.getElementById(`btn-replay-${side}`);
                     replayBtn.style.display = "inline-block"; replayBtn.innerText = "🔄 Replay Game"; 
-                    replayBtn.onclick = () => { preparePools(); applyLayoutUIModes(); };
+                    replayBtn.onclick = () => {
+                        preparePools();
+                        document.getElementById('ready-title').innerText = "Single Player";
+                        document.getElementById('ready-subtitle').innerText = "Connect & Sort Challenge";
+                        document.getElementById('ready-screen').classList.add('active');
+                    };
                     document.getElementById(`feedback-${side}`).classList.add('active');
                 }
             } else {
@@ -947,6 +984,41 @@
         /************************************************************************
          * CANVAS GENERATION & INTERACTIVE CONNECTIONS
          ************************************************************************/
+        function generateSpreadLayout(count, side) {
+            const container = document.getElementById(`canvas-container-${side}`);
+            const w = container.clientWidth || 600, h = container.clientHeight || 400;
+            const minDistancePixels = Math.max(130, w * 0.20); 
+            let points = [], attempts = 0, success = false;
+
+            while (attempts < 150 && !success) {
+                points = []; success = true;
+                for (let i = 0; i < count; i++) {
+                    let p = { x: 15 + Math.random() * 70, y: 20 + Math.random() * 60 };
+                    for (let j = 0; j < points.length; j++) {
+                        let dx = (p.x - points[j].x) * (w / 100), dy = (p.y - points[j].y) * (h / 100);
+                        if (Math.sqrt(dx * dx + dy * dy) < minDistancePixels) { success = false; break; }
+                    }
+                    if (!success) break;
+                    points.push(p);
+                }
+                attempts++;
+            }
+            if (!success || points.length < count) {
+                points = [];
+                const cols = Math.ceil(Math.sqrt(count)), rows = Math.ceil(count / cols);
+                let index = 0;
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        if (index >= count) break;
+                        let gridX = 20 + (c * (60 / Math.max(1, cols - 1))), gridY = 25 + (r * (50 / Math.max(1, rows - 1)));
+                        if (cols === 1) gridX = 50; if (rows === 1) gridY = 50;
+                        points.push({ x: gridX, y: gridY }); index++;
+                    }
+                }
+            }
+            return points;
+        }
+
         function setupChallengeRound(side) {
             const sideState = state[side];
             sideState.currentChain = []; sideState.activeDrawing = false;
@@ -968,40 +1040,8 @@
             }
 
             const rawTokens = currentQuestion.tokens;
-            
-            // Distribute points ensuring they don't overlap
-            const w = container.clientWidth || 600, h = container.clientHeight || 400;
-            const minDistancePixels = Math.max(130, w * 0.20); 
-            let points = [], attempts = 0, success = false;
-
-            while (attempts < 150 && !success) {
-                points = []; success = true;
-                for (let i = 0; i < rawTokens.length; i++) {
-                    let p = { x: 15 + Math.random() * 70, y: 20 + Math.random() * 60 };
-                    for (let j = 0; j < points.length; j++) {
-                        let dx = (p.x - points[j].x) * (w / 100), dy = (p.y - points[j].y) * (h / 100);
-                        if (Math.sqrt(dx * dx + dy * dy) < minDistancePixels) { success = false; break; }
-                    }
-                    if (!success) break;
-                    points.push(p);
-                }
-                attempts++;
-            }
-            if (!success || points.length < rawTokens.length) {
-                points = [];
-                const cols = Math.ceil(Math.sqrt(rawTokens.length)), rows = Math.ceil(rawTokens.length / cols);
-                let index = 0;
-                for (let r = 0; r < rows; r++) {
-                    for (let c = 0; c < cols; c++) {
-                        if (index >= rawTokens.length) break;
-                        let gridX = 20 + (c * (60 / Math.max(1, cols - 1))), gridY = 25 + (r * (50 / Math.max(1, rows - 1)));
-                        if (cols === 1) gridX = 50; if (rows === 1) gridY = 50;
-                        points.push({ x: gridX, y: gridY }); index++;
-                    }
-                }
-            }
-
-            let shuffledLayouts = rawTokens.map((t, i) => ({token: t, id: i, x: points[i].x, y: points[i].y})).sort(() => Math.random() - 0.5);
+            const spreadCoordinates = generateSpreadLayout(rawTokens.length, side);
+            let shuffledLayouts = rawTokens.map((t, i) => ({token: t, id: i, x: spreadCoordinates[i].x, y: spreadCoordinates[i].y})).sort(() => Math.random() - 0.5);
 
             shuffledLayouts.forEach((item) => {
                 const node = document.createElement('div');
@@ -1149,7 +1189,7 @@
         }
 
         /************************************************************************
-         * DUAL SMARTBOARD DRAG-AND-DROP
+         * DUAL SMARTBOARD DRAG-AND-DROP (SORTING MINI-GAME)
          ************************************************************************/
         function setupSortingDragAndDrop(side) {
             const dragWord = document.getElementById(`draggable-word-${side}`);
@@ -1198,60 +1238,24 @@
             const droppedCategory = zone.dataset.type;
             document.getElementById(`sorting-overlay-${side}`).classList.remove('active');
 
-            if(targetCategory === droppedCategory) { AudioFX.success(); advanceChallengeIndex(side); } 
-            else { triggerPenalty(side, "Wrong Bin!"); }
-        }
-
-        /************************************************************************
-         * CONFETTI & UI EFFECTS
-         ************************************************************************/
-        function triggerConfettiExplosion(side) {
-            const canvas = document.getElementById(`confetti-${side}`);
-            if(!canvas) return;
-            const container = document.getElementById(`canvas-container-${side}`);
-            canvas.width = container.clientWidth; canvas.height = container.clientHeight;
-            const sideState = state[side];
-            sideState.confettiParticles = []; sideState.confettiActive = true;
-            const colors = ['#ffb703', '#fb8500', '#52b788', '#2d6a4f', '#2ecc71', '#e74c3c', '#9b59b6', '#3498db'];
-
-            for (let i = 0; i < 120; i++) {
-                sideState.confettiParticles.push({
-                    x: canvas.width / 2, y: canvas.height - 20, size: Math.random() * 8 + 6,
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    speedX: (Math.random() - 0.5) * 15, speedY: -(Math.random() * 12 + 10),
-                    gravity: 0.3, rotation: Math.random() * 360, rotationSpeed: (Math.random() - 0.5) * 10
-                });
+            if(targetCategory === droppedCategory) {
+                AudioFX.success(); advanceChallengeIndex(side);
+            } else {
+                triggerPenalty(side, "Wrong Bin!");
             }
-
-            function updateConfettiFrame() {
-                if (!sideState.confettiActive) return;
-                const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height);
-                let activeParticles = false;
-                sideState.confettiParticles.forEach(p => {
-                    p.x += p.speedX; p.y += p.speedY; p.speedY += p.gravity; p.rotation += p.rotationSpeed;
-                    if (p.y < canvas.height && p.x > 0 && p.x < canvas.width) {
-                        activeParticles = true;
-                        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation * Math.PI / 180);
-                        ctx.fillStyle = p.color; ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size); ctx.restore();
-                    }
-                });
-                if (activeParticles) requestAnimationFrame(updateConfettiFrame);
-                else ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-            requestAnimationFrame(updateConfettiFrame);
         }
-
-        function stopConfettiAnimation(side) { state[side].confettiActive = false; const canvas = document.getElementById(`confetti-${side}`); if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height); }
 
         /************************************************************************
          * GLOBAL INPUT EVENT PIPELINE
          ************************************************************************/
         function goHome() {
             isTournamentMode = false; isTeamMode = false; gameActive = false;
+            document.getElementById('game-stage').classList.remove('is-playing');
             document.getElementById('homepage-screen').classList.remove('hidden');
+            document.getElementById('ready-screen').classList.remove('active');
+            
             document.getElementById('btn-toggle-mode').innerText = "👥 Switch to Team Mode";
-            document.getElementById('btn-start-match').style.display = 'block';
-            availableQuestions = []; // Flush deck
+            availableQuestions = []; 
         }
 
         function initDOMEvents() {
@@ -1261,20 +1265,26 @@
                 document.getElementById('homepage-screen').classList.add('hidden');
                 questionsPerMatch = parseInt(document.getElementById('input-questions-per-match').value) || 5;
                 syncQuestions = document.getElementById('sync-toggle').checked;
+                
                 availableQuestions = []; preparePools(); applyLayoutUIModes();
+                
+                document.getElementById('ready-title').innerText = isTeamMode ? "Team Race" : "Single Player";
+                document.getElementById('ready-subtitle').innerText = isTeamMode ? "Team A vs Team B" : "Connect & Sort Challenge";
+                document.getElementById('ready-screen').classList.add('active');
             });
             
-            // Central Game Start Button
             document.getElementById('btn-start-match').addEventListener('click', () => {
-                document.getElementById('btn-start-match').style.display = 'none';
+                document.getElementById('ready-screen').classList.remove('active');
                 gameActive = true;
+                document.getElementById('game-stage').classList.add('is-playing');
                 setupChallengeRound('left');
                 if(isTeamMode) setupChallengeRound('right');
             });
             
-            document.getElementById('btn-hp-settings').addEventListener('click', () => { document.getElementById('settings-panel').style.display = 'block'; });
+            document.getElementById('btn-hp-settings').addEventListener('click', () => {
+                document.getElementById('settings-panel').style.display = 'block';
+            });
 
-            // Settings Listeners
             document.getElementById('font-selector').addEventListener('change', (e) => { document.body.style.fontFamily = e.target.value; localStorage.setItem("jungle_game_font", e.target.value); });
             document.getElementById('theme-selector').addEventListener('change', (e) => { applyTheme(e.target.value); });
             document.getElementById('theme-media-ext').addEventListener('change', (e) => { themeExt = e.target.value; applyTheme(currentTheme); });
@@ -1307,8 +1317,11 @@
 
             document.getElementById('btn-toggle-mode').addEventListener('click', () => { 
                 isTeamMode = !isTeamMode; isTournamentMode = false; gameActive = false;
-                document.getElementById('btn-toggle-mode').innerText = isTeamMode ? "👤 Switch to Solo" : "👥 Switch to Team Mode";
                 availableQuestions = []; preparePools(); applyLayoutUIModes(); 
+                
+                document.getElementById('ready-title').innerText = isTeamMode ? "Team Race" : "Single Player";
+                document.getElementById('ready-subtitle').innerText = isTeamMode ? "Team A vs Team B" : "Connect & Sort Challenge";
+                document.getElementById('ready-screen').classList.add('active');
             });
             
             document.getElementById('btn-start-tournament').addEventListener('click', initTournament);
@@ -1321,7 +1334,11 @@
                 document.getElementById('settings-panel').style.display = 'none';
                 
                 if(!isTournamentMode && document.getElementById('homepage-screen').classList.contains('hidden')) {
+                    gameActive = false; 
                     availableQuestions = []; preparePools(); applyLayoutUIModes();
+                    document.getElementById('ready-title').innerText = isTeamMode ? "Team Race" : "Single Player";
+                    document.getElementById('ready-subtitle').innerText = "Settings Updated";
+                    document.getElementById('ready-screen').classList.add('active');
                 }
             });
 
