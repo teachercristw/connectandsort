@@ -8,7 +8,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Comic+Neue:wght@700&family=Delius&family=Fredoka+One&family=Mali:wght@600&family=Nunito:wght@800&family=Patrick+Hand&family=Quicksand:wght@700&family=Short+Stack&family=Sniglet&display=swap');
 
         :root {
-            /* Default Theme 1 (Jungle) Variables */
+            /* Core UI Palette */
             --primary-dark: #2d6a4f;
             --primary-light: #52b788;
             --secondary-dark: #1b4332;
@@ -29,10 +29,10 @@
         .bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; 
-            object-fit: contain; /* Changed to contain to avoid zooming/cropping */
-            background-size: contain; /* Changed to contain */
+            object-fit: contain; 
+            background-size: contain; 
             background-position: center;
-            background-repeat: no-repeat; /* Ensure it doesn't tile */
+            background-repeat: no-repeat;
             transition: filter 1s ease;
         }
 
@@ -45,18 +45,17 @@
         #homepage-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 500; display: flex; flex-direction: column; align-items: center; 
-            justify-content: flex-end; /* Aligns content towards the bottom */
-            padding-bottom: 10vh; /* Adds spacing from the very bottom edge */
+            justify-content: flex-end; /* Pushes content down */
+            padding-bottom: 8vh; /* Keeps it slightly above the screen bottom */
             transition: opacity 0.3s ease; 
-            background: transparent; /* Removed solid background to show video clearly */
+            background-color: #000; /* Deep black prevents in-game peek */
         }
         #homepage-screen.hidden { opacity: 0; pointer-events: none; }
         
         .hp-content-box {
-            background: rgba(255, 255, 255, 0.95); 
-            padding: 40px 60px; border-radius: 30px; text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5); border: 8px solid var(--accent-gold);
-            animation: float 4s ease-in-out infinite; max-width: 90%; z-index: 2;
+            background: transparent; 
+            padding: 20px; text-align: center;
+            z-index: 2;
         }
 
         .hp-instructions {
@@ -142,18 +141,26 @@
         @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(255, 255, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); } }
 
         .dot-node {
-            position: absolute; width: 110px; height: 110px; border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #fff, #ffeaa7); border: 6px solid var(--accent-gold);
+            position: absolute; 
+            min-width: 110px; min-height: 110px; width: max-content;
+            aspect-ratio: 1; /* Retains perfect circle shape even if it expands */
+            padding: 15px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff, var(--base-bg, #ffeaa7)); 
+            border: 6px solid var(--base-border, var(--accent-gold));
             box-shadow: 0 8px 15px rgba(0,0,0,0.3), inset -4px -4px 10px rgba(0,0,0,0.1);
             display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 26px; color: #d35400; cursor: pointer; z-index: 3;
+            font-weight: 800; color: var(--base-text, #d35400); cursor: pointer; z-index: 3;
             transform: translate(-50%, -50%); transition: transform 0.1s, background 0.2s;
-            text-align: center; word-break: break-word; padding: 8px; line-height: 1.1;
+            text-align: center; word-break: break-word; line-height: 1.1;
             animation: pulseDot 2s infinite; opacity: 0; pointer-events: none;
         }
         .dot-node.visible { opacity: 1; pointer-events: auto; }
         .dot-node:hover { transform: translate(-50%, -50%) scale(1.1); }
-        .dot-node.selected { background: radial-gradient(circle at 30% 30%, #fff, #55efc4); border-color: #00b894; color: #006266; animation: none; transform: translate(-50%, -50%) scale(1.15); box-shadow: 0 10px 25px rgba(0, 230, 118, 0.6); }
+        .dot-node.selected { 
+            background: radial-gradient(circle at 30% 30%, #fff, #55efc4) !important; 
+            border-color: #00b894 !important; color: #006266 !important; 
+            animation: none; transform: translate(-50%, -50%) scale(1.15); box-shadow: 0 10px 25px rgba(0, 230, 118, 0.6); 
+        }
 
         .feedback-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -221,11 +228,11 @@
     <!-- HOMEPAGE OVERLAY -->
     <div id="homepage-screen">
         <!-- Media BG Layer -->
-        <img id="hp-bg-img" class="bg-layer" src="background.gif">
+        <img id="hp-bg-img" class="bg-layer" src="">
         <video id="hp-bg-vid" class="bg-layer" autoplay loop muted playsinline style="display:none;"></video>
         
-        <div class="hp-content-box" style="background: transparent; box-shadow: none; border: none;">
-            <div style="display: flex; justify-content: center; gap: 18px;">
+        <div class="hp-content-box">
+            <div style="display: flex; justify-content: center; gap: 15px;">
                 <button class="chunky-btn green-btn huge" id="btn-start-app">PLAY</button>
                 <button class="chunky-btn gold-btn huge" id="btn-hp-settings">⚙️ SETTINGS</button>
             </div>
@@ -235,13 +242,13 @@
     <!-- MAIN GAME CONTAINER -->
     <div id="app-container">
         <!-- Game Media BG Layer -->
-        <img id="app-bg-img" class="bg-layer" src="background.gif">
+        <img id="app-bg-img" class="bg-layer" src="">
         <video id="app-bg-vid" class="bg-layer" autoplay loop muted playsinline style="display:none;"></video>
 
         <header>
             <div class="title-area">
                 <button class="chunky-btn gold-btn" id="btn-go-home" style="padding: 10px 15px; font-size: 16px;">🏠 Home</button>
-                <h1 id="game-title-text">Connect & Sort Activity</h1>
+                <h1 id="game-title-text">Connect & Sort</h1>
             </div>
             <div class="global-controls">
                 <button class="chunky-btn" id="btn-toggle-mode">👥 Switch to Team Mode</button>
@@ -255,10 +262,10 @@
             <div id="match-start-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index: 60; display:flex; flex-direction:column; align-items:center; justify-content:center; background: rgba(26, 58, 42, 0.85);">
                 <div class="hp-instructions" style="background:#fff; border: 6px solid var(--accent-gold); max-width:600px; padding: 30px; margin-bottom: 40px;">
                     <h2 style="text-align:center; color:var(--primary-dark); margin-bottom:20px; font-size: 32px; text-transform: uppercase;">How to Play</h2>
-                    <p style="margin-bottom: 12px;">1. 👈 <strong>Drag or Click</strong> to connect the dots in order.</p>
-                    <p style="margin-bottom: 12px;">2. ✅ Press<strong>"Check Answer"</strong>.</p>
+                    <p style="margin-bottom: 12px;">1. 👈 <strong>Drag</strong> to connect the dots in order.</p>
+                    <p style="margin-bottom: 12px;">2. ✅ Click <strong>"Check Answer"</strong>.</p>
                     <p style="margin-bottom: 12px;">3. ♻️ <strong>Sort</strong> the item into the correct bin.</p>
-                    <p style="color: #e74c3c; text-align: center; margin-top: 20px; background: rgba(231,76,60,0.1); padding: 12px; border-radius: 8px;">⚠️ Mistakes = 2 Second Penalty!</p>
+                    <p style="color: #e74c3c; text-align: center; margin-top: 20px; background: rgba(231,76,60,0.1); padding: 12px; border-radius: 8px;">⚠️ Mistakes = 3 Second Penalty!</p>
                     <p style="color: #2980b9; text-align: center; margin-top: 12px; font-size: 18px;">💡 Tap an already selected dot to clear the line connected after it.</p>
                 </div>
                 <button class="chunky-btn green-btn huge" id="btn-start-match">▶️ START MATCH</button>
@@ -284,7 +291,7 @@
                 <!-- Hidden until Start Match -->
                 <div id="controls-left" style="padding:20px; text-align:center; z-index:5; display: none; justify-content: center; gap: 15px;">
                     <button class="chunky-btn green-btn" id="btn-check-left" style="width: 200px;">Check Answer</button>
-                    <button class="chunky-btn" id="btn-reset-left" style="width: 200px;">Clear All</button>
+                    <button class="chunky-btn" id="btn-reset-left" style="width: 200px;">Clear Paths</button>
                 </div>
 
                 <!-- Left Overlays -->
@@ -302,7 +309,7 @@
                 <div class="feedback-overlay" id="penalty-left" style="z-index: 80;">
                     <div class="game-panel feedback-card">
                         <div class="feedback-text feedback-fail" id="penalty-reason-left">Time Penalty!</div>
-                        <div class="penalty-timer" id="penalty-timer-left">2</div>
+                        <div class="penalty-timer" id="penalty-timer-left">3</div>
                         <div style="font-size: 24px; color: #555; font-weight: bold;">Wait to try again...</div>
                     </div>
                 </div>
@@ -362,7 +369,7 @@
                 <div class="feedback-overlay" id="penalty-right" style="z-index: 80;">
                     <div class="game-panel feedback-card">
                         <div class="feedback-text feedback-fail" id="penalty-reason-right">Time Penalty!</div>
-                        <div class="penalty-timer" id="penalty-timer-right">2</div>
+                        <div class="penalty-timer" id="penalty-timer-right">3</div>
                         <div style="font-size: 24px; color: #555; font-weight: bold;">Wait to try again...</div>
                     </div>
                 </div>
@@ -391,7 +398,32 @@
                 <button class="chunky-btn green-btn" id="btn-close-settings">💾 Save and Close</button>
             </div>
 
-                 <!-- BLOCK 2: Data Entry -->
+            <div class="settings-grid">
+                <!-- BLOCK 1: Settings Restructure (Backgrounds & Fonts) -->
+                <div class="settings-block">
+                    <h3>🖼️ Background & Fonts</h3>
+                    <div class="form-group">
+                        <label>Game Background URL (Image/Video)</label>
+                        <input type="text" id="hp-bg-url" placeholder="http://... (Defaults to connect.mp4)">
+                    </div>
+                    <div class="form-group">
+                        <label>Or Upload Background Locally</label>
+                        <input type="file" id="hp-bg-upload" accept="image/*" style="font-size:14px; padding: 6px;">
+                    </div>
+                    <div class="form-group">
+                        <label for="font-selector">Game Interface Font Style</label>
+                        <select id="font-selector">
+                            <option value="'Fredoka One', cursive">Fredoka One</option>
+                            <option value="'Comic Neue', cursive">Comic Neue</option>
+                            <option value="'Quicksand', sans-serif">Quicksand</option>
+                            <option value="'Nunito', sans-serif">Nunito</option>
+                            <option value="'Baloo 2', cursive">Baloo 2</option>
+                            <option value="'Mali', cursive">Mali</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- BLOCK 2: Data Entry -->
                 <div class="settings-block">
                     <h3>➕ Create or Edit Challenge Item</h3>
                     <div class="form-group">
@@ -421,48 +453,7 @@
                     <button class="chunky-btn green-btn btn-sm" id="btn-add-question" style="width: 100%;">➕ Append to Pool</button>
                 </div>
 
-                <!-- BLOCK 3: Visual Themes -->
-                <div class="settings-block">
-                    <h3>🎨 Game Theme & Interface</h3>
-                    <div class="form-group">
-                        <label for="theme-selector">Game Site Theme</label>
-                        <select id="theme-selector">
-                            <option value="1">1. Jungle Explorer (Green/Brown)</option>
-                            <option value="2">2. Deep Ocean (Blue/Teal)</option>
-                            <option value="3">3. Outer Space (Black/Purple)</option>
-                            <option value="4">4. Desert Safari (Orange/Sand)</option>
-                            <option value="5">5. Cyberpunk (Dark/Neon Pink)</option>
-                            <option value="6">6. Winter Frost (Ice Blue/White)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Media Extension (If using GitHub)</label>
-                        <select id="theme-media-ext">
-                            <option value=".jpg">.jpg (Image)</option>
-                            <option value=".png">.png (Image)</option>
-                            <option value=".gif">.gif (Animated)</option>
-                            <option value=".mp4">.mp4 (Video)</option>
-                            <option value=".webm">.webm (Video)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Or Upload Image locally</label>
-                        <input type="file" id="theme-bg-upload" accept="image/*" style="font-size:14px; padding: 6px;">
-                    </div>
-                    <div class="form-group">
-                        <label for="font-selector">Game Interface Font Style</label>
-                        <select id="font-selector">
-                            <option value="'Fredoka One', cursive">Fredoka One</option>
-                            <option value="'Comic Neue', cursive">Comic Neue</option>
-                            <option value="'Quicksand', sans-serif">Quicksand</option>
-                            <option value="'Nunito', sans-serif">Nunito</option>
-                            <option value="'Baloo 2', cursive">Baloo 2</option>
-                            <option value="'Mali', cursive">Mali</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- BLOCK 4: Tournament & Cloud Data -->
+                <!-- BLOCK 3: Tournament & Cloud Data -->
                 <div class="settings-block">
                     <h3>🏆 Tournament Setup</h3>
                     <div class="form-group">
@@ -491,8 +482,10 @@
                             <label for="sync-toggle"><strong>Sync Target Pools</strong></label>
                         </div>
                     </div>
-                    <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
-                    
+                </div>
+
+                <!-- BLOCK 4: Github Cloud Data -->
+                <div class="settings-block">
                     <h3>☁️ GitHub Cloud & Local Data</h3>
                     <div class="form-group">
                         <input type="text" id="input-github-url" placeholder="https://raw.githubusercontent.com/user/repo/main/">
@@ -546,14 +539,16 @@
             { id: 4, type: "spelling", category: "trash", tokens: ["S", "a", "n", "x", "i", "n", "g"], answer: "Sanxing", image: "" }
         ];
 
-        const THEME_DATA = {
-            "1": { name: "Jungle", bg: "1", colors: {"--primary-dark": "#2d6a4f", "--primary-light": "#52b788", "--secondary-dark": "#1b4332", "--secondary-light": "#74c69d", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} },
-            "2": { name: "Ocean", bg: "2", colors: {"--primary-dark": "#023e8a", "--primary-light": "#0096c7", "--secondary-dark": "#03045e", "--secondary-light": "#48cae4", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} },
-            "3": { name: "Space", bg: "3", colors: {"--primary-dark": "#3c096c", "--primary-light": "#7b2cbf", "--secondary-dark": "#10002b", "--secondary-light": "#9d4edd", "--accent-light": "#ffffff", "--accent-gold": "#ff9e00"} },
-            "4": { name: "Desert", bg: "4", colors: {"--primary-dark": "#e76f51", "--primary-light": "#f4a261", "--secondary-dark": "#bc4749", "--secondary-light": "#e9c46a", "--accent-light": "#ffffff", "--accent-gold": "#264653"} },
-            "5": { name: "Cyberpunk",bg: "5", colors: {"--primary-dark": "#7209b7", "--primary-light": "#f72585", "--secondary-dark": "#3a0ca3", "--secondary-light": "#4cc9f0", "--accent-light": "#ffffff", "--accent-gold": "#4361ee"} },
-            "6": { name: "Winter", bg: "6", colors: {"--primary-dark": "#2a6f97", "--primary-light": "#61a5c2", "--secondary-dark": "#014f86", "--secondary-light": "#89c2d9", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} }
-        };
+        // Bubble Color Palettes
+        const BUBBLE_COLORS = [
+            { bg: '#ff9ff3', border: '#f368e0', text: '#833471' },
+            { bg: '#feca57', border: '#ff9f43', text: '#d35400' },
+            { bg: '#48dbfb', border: '#0abde3', text: '#01a3a4' },
+            { bg: '#1dd1a1', border: '#10ac84', text: '#01a3a4' },
+            { bg: '#ff6b6b', border: '#ee5253', text: '#fff' },
+            { bg: '#5f27cd', border: '#341f97', text: '#fff' },
+            { bg: '#c8d6e5', border: '#8395a7', text: '#222f3e' }
+        ];
 
         let questionPool = JSON.parse(localStorage.getItem("jungle_game_pool")) || DEFAULT_QUESTIONS;
         let isTeamMode = false;
@@ -565,12 +560,13 @@
         let availableQuestions = []; 
         let gameActive = false; 
 
-        let customBGs = JSON.parse(localStorage.getItem("jungle_game_bgs")) || {};
-        let currentTheme = localStorage.getItem("jungle_game_theme") || "1";
         let githubBaseUrl = localStorage.getItem("jungle_game_github") || "";
-        let themeExt = localStorage.getItem("jungle_game_ext") || ".jpg";
-        
         let hpData = JSON.parse(localStorage.getItem("jungle_game_hp")) || { bg: "" };
+
+        // Cleanup obsolete storage from old versions
+        localStorage.removeItem("jungle_game_bgs");
+        localStorage.removeItem("jungle_game_theme");
+        localStorage.removeItem("jungle_game_ext");
 
         // Tournament Variables
         let tournamentTeams = [];
@@ -617,8 +613,7 @@
             setupSortingDragAndDrop('left');
             setupSortingDragAndDrop('right');
             loadRulesFromStorage();
-            applyTheme(currentTheme);
-            applyHomepageSettings();
+            applyBackgrounds();
             renderSettingsUI();
             setupPasteFeature();
             
@@ -662,33 +657,15 @@
             if(savedFont) { document.getElementById('font-selector').value = savedFont; document.body.style.fontFamily = savedFont; }
             if(githubBaseUrl) document.getElementById('input-github-url').value = githubBaseUrl;
             
-            document.getElementById('theme-selector').value = currentTheme;
-            document.getElementById('theme-media-ext').value = themeExt;
             document.getElementById('input-questions-per-match').value = questionsPerMatch;
-            
             if(hpData.bg && !hpData.bg.startsWith('data:')) document.getElementById('hp-bg-url').value = hpData.bg;
         }
 
-        function applyHomepageSettings() {
-            let bgUrl = hpData.bg;
-            if(!bgUrl) {
-                // Now defaults exclusively to connect.mp4 on the homepage if unset
-                bgUrl = githubBaseUrl ? `${githubBaseUrl}connect.mp4` : 'connect.mp4';
-            }
+        function applyBackgrounds() {
+            // Unified background setter for both homepage and app-container
+            let bgUrl = hpData.bg || (githubBaseUrl ? `${githubBaseUrl}connect.mp4` : 'connect.mp4');
             renderMediaBackground('hp-bg-img', 'hp-bg-vid', bgUrl);
-        }
-
-        function applyTheme(themeId) {
-            currentTheme = themeId;
-            const theme = THEME_DATA[themeId];
-            
-            for(let key in theme.colors) { document.documentElement.style.setProperty(key, theme.colors[key]); }
-            
-            let bgUrl = customBGs[themeId] || (githubBaseUrl ? `${githubBaseUrl}${theme.bg}${themeExt}` : 'background.gif');
             renderMediaBackground('app-bg-img', 'app-bg-vid', bgUrl);
-            
-            localStorage.setItem("jungle_game_theme", themeId);
-            localStorage.setItem("jungle_game_ext", themeExt);
         }
 
         function savePoolToStorage() {
@@ -702,7 +679,7 @@
 
         function saveHomepageData() {
             localStorage.setItem("jungle_game_hp", JSON.stringify(hpData));
-            applyHomepageSettings();
+            applyBackgrounds();
         }
 
         /************************************************************************
@@ -863,7 +840,7 @@
 
         function showTournamentRankings() {
             gameActive = false;
-            let html = `<div class="hp-content-box" style="width: 90%; max-width: 800px; padding: 40px;">`;
+            let html = `<div class="hp-content-box" style="width: 90%; max-width: 800px; padding: 40px; background: rgba(255,255,255,0.95); border-radius:30px; box-shadow:0 15px 35px rgba(0,0,0,0.5); border:8px solid var(--accent-gold);">`;
             html += `<h1 style="color:var(--primary-dark); font-size:50px; margin-bottom:20px; text-transform:uppercase;">🏆 Final Rankings 🏆</h1>`;
             html += `<div style="text-align: left; font-size: 24px; max-height: 50vh; overflow-y: auto;">`;
             
@@ -1038,9 +1015,25 @@
 
             shuffledLayouts.forEach((item) => {
                 const node = document.createElement('div');
-                node.className = 'dot-node visible'; node.id = `node-${side}-${item.id}`;
-                node.innerText = item.token; node.style.left = `${item.x}%`; node.style.top = `${item.y}%`;
+                node.className = 'dot-node visible'; 
+                node.id = `node-${side}-${item.id}`;
+                node.innerText = item.token; 
+                node.style.left = `${item.x}%`; node.style.top = `${item.y}%`;
                 node.dataset.itemId = item.id;
+
+                // Dynamically reduce font size if string is very long to prevent bleeding
+                let fSize = 26;
+                if(item.token.length > 5) {
+                    fSize = Math.max(14, 26 - (item.token.length - 5) * 1.5);
+                }
+                node.style.fontSize = `${fSize}px`;
+
+                // Assign a randomized color palette to this bubble
+                const colorScheme = BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)];
+                node.style.setProperty('--base-bg', colorScheme.bg);
+                node.style.setProperty('--base-border', colorScheme.border);
+                node.style.setProperty('--base-text', colorScheme.text);
+
                 node.addEventListener('mousedown', (e) => handleNodeSelectionStart(e, side, item, node));
                 node.addEventListener('touchstart', (e) => handleNodeSelectionStart(e, side, item, node), {passive: true});
                 container.appendChild(node);
@@ -1071,7 +1064,7 @@
             const sideState = state[side];
             if(!sideState || sideState.currentChain.length === 0 || !gameActive) return;
 
-            const highlightColor = THEME_DATA[currentTheme].colors["--primary-light"];
+            const highlightColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-light').trim();
 
             ctx.lineWidth = 14; ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
             ctx.shadowColor = highlightColor; ctx.shadowBlur = 20;
@@ -1332,8 +1325,6 @@
 
             // Settings Listeners
             document.getElementById('font-selector').addEventListener('change', (e) => { document.body.style.fontFamily = e.target.value; localStorage.setItem("jungle_game_font", e.target.value); });
-            document.getElementById('theme-selector').addEventListener('change', (e) => { applyTheme(e.target.value); });
-            document.getElementById('theme-media-ext').addEventListener('change', (e) => { themeExt = e.target.value; applyTheme(currentTheme); });
             
             document.getElementById('hp-bg-url').addEventListener('input', (e) => { hpData.bg = e.target.value; saveHomepageData(); });
             
@@ -1342,7 +1333,7 @@
                 const reader = new FileReader();
                 reader.onload = function(evt) {
                     compressImagePipeline(evt.target.result, 1920, (compressedBase64) => {
-                        hpData.bg = compressedBase64; document.getElementById('hp-bg-url').value = ''; saveHomepageData(); alert("Homepage background updated!");
+                        hpData.bg = compressedBase64; document.getElementById('hp-bg-url').value = ''; saveHomepageData(); alert("Background updated successfully!");
                     });
                 };
                 reader.readAsDataURL(file);
@@ -1387,19 +1378,6 @@
             const fileInput = document.getElementById('file-import-input');
             document.getElementById('btn-import-trigger').addEventListener('click', () => fileInput.click());
             fileInput.addEventListener('change', handleFileImportEvent);
-
-            document.getElementById('theme-bg-upload').addEventListener('change', function(e) {
-                const file = e.target.files[0]; if(!file) return;
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    compressImagePipeline(evt.target.result, 1920, (compressedBase64) => {
-                        customBGs[currentTheme] = compressedBase64;
-                        localStorage.setItem("jungle_game_bgs", JSON.stringify(customBGs));
-                        applyTheme(currentTheme); alert("Custom background applied for " + THEME_DATA[currentTheme].name + " theme!");
-                    });
-                };
-                reader.readAsDataURL(file);
-            });
         }
 
         /************************************************************************
@@ -1538,9 +1516,9 @@
                 githubBaseUrl = url;
                 localStorage.setItem("jungle_game_github", url);
                 savePoolToStorage();
-                applyTheme(currentTheme); 
+                applyBackgrounds(); 
                 
-                alert("Success! Database and theme backgrounds linked to GitHub.");
+                alert("Success! Database and media linked to GitHub.");
             } catch (e) {
                 alert("Error: " + e.message + "\nMake sure you are using the 'Raw' GitHub link!");
             } finally {
@@ -1551,19 +1529,17 @@
         function executeSystemResetAction() {
             if(confirm("Confirm structural purge? This deletes local custom backgrounds and resets questions!")) {
                 localStorage.removeItem("jungle_game_pool");
-                localStorage.removeItem("jungle_game_bgs");
                 localStorage.removeItem("jungle_game_github");
-                localStorage.removeItem("jungle_game_ext");
                 localStorage.removeItem("jungle_game_hp");
                 localStorage.removeItem("jungle_game_q_count");
-                customBGs = {}; githubBaseUrl = ""; themeExt = ".jpg";
+                githubBaseUrl = "";
                 hpData = { bg: "" };
                 
                 document.getElementById('input-github-url').value = "";
                 document.getElementById('hp-bg-url').value = "";
                 questionsPerMatch = 5;
                 questionPool = [...DEFAULT_QUESTIONS];
-                savePoolToStorage(); applyHomepageSettings(); applyTheme("1"); goHome();
+                savePoolToStorage(); applyBackgrounds(); goHome();
             }
         }
 
