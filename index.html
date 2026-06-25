@@ -28,7 +28,11 @@
         /* Video & Image Background Managers */
         .bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; object-fit: cover; background-size: cover; background-position: center;
+            z-index: -1; 
+            object-fit: contain; /* Changed to contain to avoid zooming/cropping */
+            background-size: contain; /* Changed to contain */
+            background-position: center;
+            background-repeat: no-repeat; /* Ensure it doesn't tile */
             transition: filter 1s ease;
         }
 
@@ -40,8 +44,11 @@
         /* Homepage Styling */
         #homepage-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.3s ease; background: #1a3a2a;
+            z-index: 500; display: flex; flex-direction: column; align-items: center; 
+            justify-content: flex-end; /* Aligns content towards the bottom */
+            padding-bottom: 10vh; /* Adds spacing from the very bottom edge */
+            transition: opacity 0.3s ease; 
+            background: transparent; /* Removed solid background to show video clearly */
         }
         #homepage-screen.hidden { opacity: 0; pointer-events: none; }
         
@@ -679,9 +686,8 @@
         function applyHomepageSettings() {
             let bgUrl = hpData.bg;
             if(!bgUrl) {
-                // Fallback to game theme
-                const theme = THEME_DATA[currentTheme];
-                bgUrl = customBGs[currentTheme] || (githubBaseUrl ? `${githubBaseUrl}${theme.bg}${themeExt}` : 'background.gif');
+                // Now defaults exclusively to connect.mp4 on the homepage if unset
+                bgUrl = githubBaseUrl ? `${githubBaseUrl}connect.mp4` : 'connect.mp4';
             }
             renderMediaBackground('hp-bg-img', 'hp-bg-vid', bgUrl);
         }
@@ -697,9 +703,6 @@
             
             localStorage.setItem("jungle_game_theme", themeId);
             localStorage.setItem("jungle_game_ext", themeExt);
-            
-            // Sync homepage if it relies on default
-            if(!hpData.bg) applyHomepageSettings();
         }
 
         function savePoolToStorage() {
@@ -999,7 +1002,6 @@
             const container = document.getElementById(`canvas-container-${side}`);
             container.querySelectorAll('.dot-node').forEach(n => n.remove());
 
-            document.getElementById(`ans-box-${side}`).innerText = "Connect dots in order!";
             const clueHolder = document.getElementById(`clue-holder-${side}`);
             clueHolder.innerHTML = ""; clueHolder.style.display = "none";
 
