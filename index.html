@@ -225,9 +225,7 @@
 </head>
 <body>
 
-    <!-- HOMEPAGE OVERLAY -->
     <div id="homepage-screen">
-        <!-- Media BG Layer -->
         <img id="hp-bg-img" class="bg-layer" src="">
         <video id="hp-bg-vid" class="bg-layer" autoplay loop muted playsinline style="display:none;"></video>
         
@@ -239,9 +237,7 @@
         </div>
     </div>
 
-    <!-- MAIN GAME CONTAINER -->
     <div id="app-container">
-        <!-- Game Media BG Layer -->
         <img id="app-bg-img" class="bg-layer" src="">
         <video id="app-bg-vid" class="bg-layer" autoplay loop muted playsinline style="display:none;"></video>
 
@@ -258,7 +254,6 @@
 
         <main id="game-stage">
             
-            <!-- CENTRAL START/INSTRUCTION OVERLAY -->
             <div id="match-start-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index: 60; display:flex; flex-direction:column; align-items:center; justify-content:center; background: rgba(26, 58, 42, 0.85);">
                 <div class="hp-instructions" style="background:#fff; border: 6px solid var(--accent-gold); max-width:600px; padding: 30px; margin-bottom: 40px;">
                     <h2 style="text-align:center; color:var(--primary-dark); margin-bottom:20px; font-size: 32px; text-transform: uppercase;">How to Play</h2>
@@ -271,7 +266,6 @@
                 <button class="chunky-btn green-btn huge" id="btn-start-match">▶️ START MATCH</button>
             </div>
 
-            <!-- LEFT TEAM ZONE -->
             <div class="game-zone" id="zone-left">
                 <div class="hud-row">
                     <div class="score-badge" id="score-left">Score: 0 / 0</div>
@@ -288,13 +282,11 @@
                     <canvas class="confetti-canvas" id="confetti-left"></canvas>
                 </div>
 
-                <!-- Hidden until Start Match -->
                 <div id="controls-left" style="padding:20px; text-align:center; z-index:5; display: none; justify-content: center; gap: 15px;">
                     <button class="chunky-btn green-btn" id="btn-check-left" style="width: 200px;">Check Answer</button>
                     <button class="chunky-btn" id="btn-reset-left" style="width: 200px;">Clear Paths</button>
                 </div>
 
-                <!-- Left Overlays -->
                 <div class="feedback-overlay" id="sorting-overlay-left" style="z-index: 70;">
                     <div class="game-panel feedback-card" style="max-width: 650px !important;">
                         <div class="feedback-text" style="color: var(--primary-dark);">Sort It!</div>
@@ -331,7 +323,6 @@
                 </div>
             </div>
 
-            <!-- RIGHT TEAM ZONE -->
             <div class="game-zone" id="zone-right" style="display: none;">
                 <div class="hud-row">
                     <div class="score-badge" id="score-right">Score: 0 / 0</div>
@@ -348,13 +339,11 @@
                     <canvas class="confetti-canvas" id="confetti-right"></canvas>
                 </div>
 
-                <!-- Hidden until Start Match -->
                 <div id="controls-right" style="padding:20px; text-align:center; z-index:5; display: none; justify-content: center; gap: 15px;">
                     <button class="chunky-btn green-btn" id="btn-check-right" style="width: 200px;">Check Answer</button>
                     <button class="chunky-btn" id="btn-reset-right" style="width: 200px;">Clear Paths</button>
                 </div>
 
-                <!-- Right Overlays -->
                 <div class="feedback-overlay" id="sorting-overlay-right" style="z-index: 70;">
                     <div class="game-panel feedback-card" style="max-width: 650px !important;">
                         <div class="feedback-text" style="color: var(--primary-dark);">Sort It!</div>
@@ -399,7 +388,6 @@
             </div>
 
             <div class="settings-grid">
-                <!-- BLOCK 1: Settings Restructure (Backgrounds & Fonts) -->
                 <div class="settings-block">
                     <h3>🖼️ Background & Fonts</h3>
                     <div class="form-group">
@@ -423,7 +411,6 @@
                     </div>
                 </div>
 
-                <!-- BLOCK 2: Data Entry -->
                 <div class="settings-block">
                     <h3>➕ Create or Edit Challenge Item</h3>
                     <div class="form-group">
@@ -453,7 +440,6 @@
                     <button class="chunky-btn green-btn btn-sm" id="btn-add-question" style="width: 100%;">➕ Append to Pool</button>
                 </div>
 
-                <!-- BLOCK 3: Tournament & Cloud Data -->
                 <div class="settings-block">
                     <h3>🏆 Tournament Setup</h3>
                     <div class="form-group">
@@ -484,7 +470,6 @@
                     </div>
                 </div>
 
-                <!-- BLOCK 4: Github Cloud Data -->
                 <div class="settings-block">
                     <h3>☁️ GitHub Cloud & Local Data</h3>
                     <div class="form-group">
@@ -499,7 +484,6 @@
                     <button class="chunky-btn btn-sm" id="btn-clear-system" style="background:#e74c3c; margin-top:15px; width:100%;">⚠️ Factory Reset</button>
                 </div>
 
-                <!-- BLOCK 5: Question Table -->
                 <div class="settings-block" style="grid-column: span 2;">
                     <h3>Current Challenge Item Pool (<span id="pool-count-label">0</span> Questions loaded)</h3>
                     <div style="max-height: 350px; overflow-y: auto; margin-top:10px; padding-right: 10px;">
@@ -523,7 +507,6 @@
 
     </div>
 
-    <!-- Tournament Results Modal -->
     <div id="tournament-results-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; display:none; align-items:center; justify-content:center;"></div>
 
     <audio id="victory-audio"><source src="winner sound effect.mp3" type="audio/mpeg"></audio>
@@ -541,13 +524,13 @@
 
         // Bubble Color Palettes
         const BUBBLE_COLORS = [
-            { bg: '#ff9ff3', border: '#f368e0', text: '#833471' },
-            { bg: '#feca57', border: '#ff9f43', text: '#d35400' },
-            { bg: '#48dbfb', border: '#0abde3', text: '#01a3a4' },
-            { bg: '#1dd1a1', border: '#10ac84', text: '#01a3a4' },
-            { bg: '#ff6b6b', border: '#ee5253', text: '#fff' },
-            { bg: '#5f27cd', border: '#341f97', text: '#fff' },
-            { bg: '#c8d6e5', border: '#8395a7', text: '#222f3e' }
+            { bg: '#ff9ff3', border: '#f368e0', text: '#833471' }, // 0: Pink
+            { bg: '#feca57', border: '#ff9f43', text: '#d35400' }, // 1: Orange/Yellow
+            { bg: '#48dbfb', border: '#0abde3', text: '#01a3a4' }, // 2: Blue
+            { bg: '#1dd1a1', border: '#10ac84', text: '#01a3a4' }, // 3: Green
+            { bg: '#ff6b6b', border: '#ee5253', text: '#fff' },    // 4: Red
+            { bg: '#5f27cd', border: '#341f97', text: '#fff' },    // 5: Purple
+            { bg: '#c8d6e5', border: '#8395a7', text: '#222f3e' }  // 6: Grey
         ];
 
         let questionPool = JSON.parse(localStorage.getItem("jungle_game_pool")) || DEFAULT_QUESTIONS;
@@ -979,39 +962,64 @@
 
             const rawTokens = currentQuestion.tokens;
             
-            // Distribute points ensuring they don't overlap
+            // --- NEW RANDOM LAYOUT ALGORITHM ---
             const w = container.clientWidth || 600, h = container.clientHeight || 400;
-            const minDistancePixels = Math.max(130, w * 0.20); 
-            let points = [], attempts = 0, success = false;
+            const bubbleSize = 110; 
+            // Start with a comfortable distance, adapt downwards if screen is cramped
+            let initialMinDist = Math.min(200, Math.max(bubbleSize + 10, Math.sqrt((w * h) / rawTokens.length) * 0.6));
+            
+            let points = [];
+            for (let i = 0; i < rawTokens.length; i++) {
+                let placed = false;
+                let attempts = 0;
+                let currentDist = initialMinDist;
 
-            while (attempts < 150 && !success) {
-                points = []; success = true;
-                for (let i = 0; i < rawTokens.length; i++) {
-                    let p = { x: 15 + Math.random() * 70, y: 20 + Math.random() * 60 };
+                while (!placed && attempts < 300) {
+                    // Margin buffers: keep away from absolute edges (10% to 90% for X, 15% to 85% for Y)
+                    let x = 10 + Math.random() * 80; 
+                    let y = 15 + Math.random() * 70; 
+
+                    let px = (x / 100) * w;
+                    let py = (y / 100) * h;
+
+                    let overlap = false;
                     for (let j = 0; j < points.length; j++) {
-                        let dx = (p.x - points[j].x) * (w / 100), dy = (p.y - points[j].y) * (h / 100);
-                        if (Math.sqrt(dx * dx + dy * dy) < minDistancePixels) { success = false; break; }
+                        let ex = (points[j].x / 100) * w;
+                        let ey = (points[j].y / 100) * h;
+                        if (Math.hypot(px - ex, py - ey) < currentDist) {
+                            overlap = true;
+                            break;
+                        }
                     }
-                    if (!success) break;
-                    points.push(p);
+
+                    if (!overlap) {
+                        points.push({ x, y });
+                        placed = true;
+                    }
+
+                    attempts++;
+                    // If it's too cramped, reduce the required distance slightly to force placement
+                    if (attempts % 30 === 0) {
+                        currentDist *= 0.85; 
+                    }
                 }
-                attempts++;
-            }
-            if (!success || points.length < rawTokens.length) {
-                points = [];
-                const cols = Math.ceil(Math.sqrt(rawTokens.length)), rows = Math.ceil(rawTokens.length / cols);
-                let index = 0;
-                for (let r = 0; r < rows; r++) {
-                    for (let c = 0; c < cols; c++) {
-                        if (index >= rawTokens.length) break;
-                        let gridX = 20 + (c * (60 / Math.max(1, cols - 1))), gridY = 25 + (r * (50 / Math.max(1, rows - 1)));
-                        if (cols === 1) gridX = 50; if (rows === 1) gridY = 50;
-                        points.push({ x: gridX, y: gridY }); index++;
-                    }
+                
+                // Absolute fallback just in case
+                if (!placed) {
+                    points.push({ x: 20 + Math.random() * 60, y: 20 + Math.random() * 60 });
                 }
             }
 
             let shuffledLayouts = rawTokens.map((t, i) => ({token: t, id: i, x: points[i].x, y: points[i].y})).sort(() => Math.random() - 0.5);
+
+            // --- TEAM COLORS ---
+            // Left team gets a Blue theme, Right team gets a Pink/Purple theme. Single player gets Green.
+            let colorScheme;
+            if (isTeamMode) {
+                colorScheme = side === 'left' ? BUBBLE_COLORS[2] : BUBBLE_COLORS[0]; 
+            } else {
+                colorScheme = BUBBLE_COLORS[3]; // Green for solo
+            }
 
             shuffledLayouts.forEach((item) => {
                 const node = document.createElement('div');
@@ -1028,8 +1036,7 @@
                 }
                 node.style.fontSize = `${fSize}px`;
 
-                // Assign a randomized color palette to this bubble
-                const colorScheme = BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)];
+                // Apply the unified team color
                 node.style.setProperty('--base-bg', colorScheme.bg);
                 node.style.setProperty('--base-border', colorScheme.border);
                 node.style.setProperty('--base-text', colorScheme.text);
