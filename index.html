@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jungle Connect & Sort: Race Edition</title>
+    <title>Connect & Sort by Cris Saranza</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Comic+Neue:wght@700&family=Delius&family=Fredoka+One&family=Mali:wght@600&family=Nunito:wght@800&family=Patrick+Hand&family=Quicksand:wght@700&family=Short+Stack&family=Sniglet&display=swap');
 
@@ -11,20 +11,53 @@
             /* Default Theme 1 (Jungle) Variables */
             --primary-dark: #2d6a4f;
             --primary-light: #52b788;
-            --secondary-dark: #8c6239;
-            --secondary-light: #b38659;
-            --accent-light: #f4f1de;
+            --secondary-dark: #1b4332;
+            --secondary-light: #74c69d;
+            --accent-light: #ffffff;
             --accent-gold: #ffb703;
         }
 
         * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Comic Neue', 'Fredoka One', cursive, sans-serif;
-            background-color: #1a3a2a; color: var(--accent-light); overflow: hidden;
+            font-family: 'Fredoka One', cursive, sans-serif;
+            background-color: #1a3a2a; color: #333; overflow: hidden;
             width: 100vw; height: 100vh;
         }
 
+        /* Homepage Styling */
+        #homepage-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('background.gif'); background-size: cover; background-position: center;
+            z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.3s ease;
+        }
+        #homepage-screen.hidden { opacity: 0; pointer-events: none; }
+        
+        .hp-content-box {
+            background: rgba(255, 255, 255, 0.95); /* Solidified for performance */
+            padding: 40px 60px; border-radius: 30px; text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 8px solid var(--accent-gold);
+            animation: float 4s ease-in-out infinite; max-width: 90%;
+        }
+        
+        #hp-title {
+            font-size: 80px; color: var(--primary-dark);
+            text-shadow: 3px 3px 0 #fff, 6px 6px 0 rgba(0,0,0,0.1);
+            margin-bottom: 5px; line-height: 1.1;
+        }
+
+        #hp-subtitle {
+            font-size: 24px; color: #555; margin-bottom: 25px; font-family: 'Nunito', sans-serif; font-weight: 800;
+        }
+
+        .hp-instructions {
+            background: rgba(0,0,0,0.05); border-radius: 16px; padding: 20px; text-align: left;
+            margin: 0 auto 30px auto; max-width: 500px; font-size: 20px; font-family: 'Nunito', sans-serif;
+            font-weight: 800; color: #333; border: 3px solid rgba(0,0,0,0.1);
+        }
+
+        /* Application Container */
         #app-container {
             position: relative; width: 100%; height: 100%; display: flex; flex-direction: column;
             background-image: url('background.gif'); background-size: cover; background-position: center;
@@ -32,48 +65,54 @@
         }
 
         header {
-            background: rgba(0, 0, 0, 0.6); border-bottom: 5px solid var(--secondary-dark);
+            background: rgba(255, 255, 255, 0.85); border-bottom: 4px solid rgba(255,255,255,0.4);
             padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 10;
-            backdrop-filter: blur(5px);
         }
 
-        .title-area h1 { font-size: 28px; color: var(--accent-gold); text-shadow: 2px 2px #000; font-family: inherit; }
+        .title-area { display: flex; align-items: center; gap: 15px; }
+        .title-area h1 { font-size: 28px; color: var(--primary-dark); font-family: inherit; margin: 0; }
 
         .global-controls { display: flex; gap: 12px; align-items: center; }
 
-        .jungle-btn {
-            font-family: inherit; font-weight: 700; background: linear-gradient(to bottom, var(--secondary-light), var(--secondary-dark));
-            color: #fff; border: 3px solid rgba(0,0,0,0.5); border-radius: 8px; padding: 10px 20px;
-            cursor: pointer; font-size: 16px; text-shadow: 1px 1px #000; box-shadow: 0 5px 0px rgba(0,0,0,0.5); transition: all 0.1s ease;
+        /* Chunky 3D Mobile Game Buttons */
+        .chunky-btn {
+            font-family: inherit; font-weight: 700; color: #fff;
+            background: var(--secondary-light); border: none; border-radius: 16px;
+            padding: 14px 24px; cursor: pointer; font-size: 18px; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 8px 0 var(--secondary-dark), 0 15px 20px rgba(0,0,0,0.3);
+            transition: all 0.1s ease; outline: none; position: relative;
         }
-        .jungle-btn:active { transform: translateY(3px); box-shadow: 0 2px 0px rgba(0,0,0,0.5); }
-        .jungle-btn.green-btn { background: linear-gradient(to bottom, var(--primary-light), var(--primary-dark)); }
-        .jungle-btn.tournament-btn { background: linear-gradient(to bottom, #ffb703, #fb8500); border-color: #d4a373; box-shadow: 0 5px 0px #d4a373; }
-
-        .audio-popover { background: rgba(0,0,0,0.8); padding: 10px 14px; border-radius: 10px; display: flex; align-items: center; gap: 12px; border: 2px solid var(--primary-light); }
+        .chunky-btn:active { transform: translateY(8px); box-shadow: 0 0px 0 var(--secondary-dark), 0 5px 10px rgba(0,0,0,0.3); }
+        .chunky-btn.green-btn { background: var(--primary-light); box-shadow: 0 8px 0 var(--primary-dark), 0 15px 20px rgba(0,0,0,0.3); }
+        .chunky-btn.green-btn:active { box-shadow: 0 0px 0 var(--primary-dark), 0 5px 10px rgba(0,0,0,0.3); }
+        .chunky-btn.gold-btn { background: var(--accent-gold); box-shadow: 0 8px 0 #d4a373, 0 15px 20px rgba(0,0,0,0.3); color: #333;}
+        .chunky-btn.gold-btn:active { box-shadow: 0 0px 0 #d4a373, 0 5px 10px rgba(0,0,0,0.3); }
+        .chunky-btn.huge { font-size: 28px; padding: 20px 40px; border-radius: 24px; box-shadow: 0 12px 0 var(--primary-dark), 0 20px 30px rgba(0,0,0,0.3);}
+        .chunky-btn.huge:active { transform: translateY(12px); box-shadow: 0 0px 0 var(--primary-dark), 0 10px 15px rgba(0,0,0,0.3); }
 
         #game-stage { flex: 1; display: flex; position: relative; width: 100%; height: calc(100% - 78px); }
 
         .game-zone { flex: 1; position: relative; height: 100%; display: flex; flex-direction: column; overflow: hidden; transition: filter 0.5s ease; }
-        .game-zone:nth-child(2) { border-left: 5px dashed var(--secondary-dark); background: rgba(0, 0, 0, 0.15); }
+        .game-zone:nth-child(2) { border-left: 6px dashed rgba(255,255,255,0.4); background: rgba(0, 0, 0, 0.15); }
         .game-zone.dimmed { filter: grayscale(100%) brightness(40%); pointer-events: none; }
 
-        .wooden-sign {
-            background: linear-gradient(135deg, var(--secondary-light), var(--secondary-dark));
-            border: 5px solid rgba(0,0,0,0.6); border-radius: 12px; padding: 14px 20px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.6), inset 0 0 12px rgba(0,0,0,0.3);
+        /* Solid Game Panel for Performance */
+        .game-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border: 6px solid var(--accent-gold); border-radius: 24px; padding: 14px 20px;
+            box-shadow: 0 12px 0px rgba(0,0,0,0.15), inset 0 0 20px rgba(255,255,255,0.5);
             text-align: center; margin: 12px auto; width: 90%; max-width: 90%; z-index: 5; position: relative;
         }
 
-        .hud-row { display: flex; justify-content: space-between; align-items: center; width: 92%; margin: 8px auto 0 auto; z-index: 5; }
+        .hud-row { display: flex; justify-content: space-between; align-items: center; width: 92%; margin: 12px auto 0 auto; z-index: 5; }
 
-        .answer-box { font-size: 32px; font-weight: bold; color: #fff; min-height: 50px; display: flex; align-items: center; justify-content: center; letter-spacing: 1.5px; text-shadow: 2px 2px 3px #000; }
+        .answer-box { font-size: 38px; font-weight: bold; color: var(--primary-dark); min-height: 50px; display: flex; align-items: center; justify-content: center; letter-spacing: 1.5px; }
 
-        .score-badge { font-size: 18px; background: rgba(0,0,0,0.7); padding: 6px 14px; border-radius: 20px; border: 2px solid var(--accent-gold); color: var(--accent-gold); font-weight: bold; }
+        .score-badge { font-size: 20px; background: #fff; padding: 8px 18px; border-radius: 30px; border: 4px solid var(--accent-gold); color: var(--primary-dark); font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
         .clue-pic-holder {
-            width: 110px; height: 110px; margin: 5px auto 0 auto; border: 3px solid var(--accent-gold); border-radius: 8px;
-            background: rgba(0,0,0,0.4); display: none; overflow: hidden; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            width: 120px; height: 120px; margin: 10px auto 0 auto; border: 4px solid var(--primary-light); border-radius: 16px;
+            background: #fff; display: none; overflow: hidden; justify-content: center; align-items: center; box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         }
         .clue-pic-holder img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
@@ -81,89 +120,114 @@
         .dot-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
         .confetti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
 
+        @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(255, 255, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); } }
+
         .dot-node {
             position: absolute; width: 110px; height: 110px; border-radius: 50%;
-            background: radial-gradient(circle, #ffeaa7, #fdcb6e); border: 5px solid var(--secondary-dark);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4), inset 0 0 10px rgba(255,255,255,0.7);
+            background: radial-gradient(circle at 30% 30%, #fff, #ffeaa7); border: 6px solid var(--accent-gold);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3), inset -4px -4px 10px rgba(0,0,0,0.1);
             display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 24px; color: #2d3436; cursor: pointer; z-index: 3;
-            transform: translate(-50%, -50%); transition: transform 0.2s, background 0.3s;
+            font-weight: 800; font-size: 26px; color: #d35400; cursor: pointer; z-index: 3;
+            transform: translate(-50%, -50%); transition: transform 0.1s, background 0.2s;
             text-align: center; word-break: break-word; padding: 8px; line-height: 1.1;
+            animation: pulseDot 2s infinite;
         }
-        .dot-node:hover { transform: translate(-50%, -50%) scale(1.08); }
-        .dot-node.selected { background: radial-gradient(circle, #55efc4, #00b894); border-color: #006266; color: #fff; box-shadow: 0 0 20px #55efc4; }
+        .dot-node:hover { transform: translate(-50%, -50%) scale(1.1); }
+        .dot-node.selected { background: radial-gradient(circle at 30% 30%, #fff, #55efc4); border-color: #00b894; color: #006266; animation: none; transform: translate(-50%, -50%) scale(1.15); box-shadow: 0 10px 25px rgba(0, 230, 118, 0.6); }
 
         .feedback-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.75); z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            background: rgba(0,0,0,0.8); z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
         }
         .feedback-overlay.active { opacity: 1; pointer-events: auto; }
-        .feedback-card { transform: scale(0.7); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 550px !important; width: 90%; }
+        .feedback-card { transform: scale(0.7); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 550px !important; width: 90%; background: #fff;}
         .feedback-overlay.active .feedback-card { transform: scale(1); }
-        .feedback-text { font-size: 42px; font-weight: bold; margin-bottom: 15px; text-shadow: 2px 2px #000; }
-        .feedback-success { color: #2ecc71; }
-        .feedback-fail { color: #e74c3c; }
+        .feedback-text { font-size: 48px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
+        .feedback-success { color: #2ecc71; text-shadow: 2px 2px 0px #27ae60; }
+        .feedback-fail { color: #e74c3c; text-shadow: 2px 2px 0px #c0392b; }
 
         .draggable-word {
-            font-size: 36px; padding: 15px 30px; background: #fff; color: #000;
-            border-radius: 10px; display: inline-block; cursor: grab; margin: 20px;
-            border: 4px solid var(--primary-dark); box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            touch-action: none; position: relative; z-index: 100;
+            font-size: 40px; padding: 15px 35px; background: #fff; color: var(--primary-dark);
+            border-radius: 20px; display: inline-block; cursor: grab; margin: 20px;
+            border: 6px solid var(--primary-light); box-shadow: 0 10px 0 var(--primary-dark), 0 15px 25px rgba(0,0,0,0.3);
+            touch-action: none; position: relative; z-index: 100; font-weight: 800;
         }
-        .draggable-word:active { cursor: grabbing; }
+        .draggable-word:active { cursor: grabbing; box-shadow: 0 0px 0 var(--primary-dark), 0 5px 10px rgba(0,0,0,0.3); transform: translateY(10px);}
+        
         .drop-zone {
-            width: 180px; height: 180px; border-radius: 15px; 
-            display: flex; align-items: center; justify-content: center; font-size: 28px; transition: all 0.2s ease;
+            width: 180px; height: 180px; border-radius: 24px; 
+            display: flex; align-items: center; justify-content: center; font-size: 32px; transition: all 0.2s ease;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.1); border-width: 6px; border-style: dashed; font-weight: 800;
         }
-        /* Waste Bins universally remain Red/Green */
-        .zone-trash { background: rgba(231, 76, 60, 0.2); border: 5px dashed #e74c3c; }
-        .zone-recycle { background: rgba(46, 204, 113, 0.2); border: 5px dashed #2ecc71; }
+        .zone-trash { background: rgba(231, 76, 60, 0.1); border-color: #e74c3c; color: #c0392b;}
+        .zone-recycle { background: rgba(46, 204, 113, 0.1); border-color: #2ecc71; color: #27ae60;}
 
-        .penalty-timer { font-size: 80px; font-weight: bold; color: #ff7675; text-shadow: 3px 3px 0 #000; margin: 20px 0; font-family: 'Fredoka One', sans-serif;}
+        .penalty-timer { font-size: 90px; font-weight: bold; color: #ff7675; margin: 20px 0; animation: pulseDot 1s infinite;}
 
         /* Admin Settings Panel */
-        #settings-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26, 58, 42, 0.98); z-index: 100; display: none; padding: 24px; overflow-y: auto; }
+        #settings-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26, 58, 42, 0.98); z-index: 1000; display: none; padding: 24px; overflow-y: auto; color: #fff;}
         .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .settings-block { background: rgba(255,255,255,0.05); border: 2px solid var(--secondary-dark); border-radius: 8px; padding: 15px; }
-        .settings-block h3 { color: var(--accent-gold); margin-bottom: 12px; border-bottom: 1px solid var(--secondary-dark); padding-bottom: 4px; }
-        .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 4px; font-size: 15px; color: var(--primary-light); }
-        input[type="text"], select, textarea { font-family: inherit; width: 100%; background: #11261c; border: 2px solid var(--secondary-dark); border-radius: 6px; padding: 10px; color: #fff; font-size: 15px; }
+        .settings-block { background: rgba(255,255,255,0.05); border: 2px solid var(--primary-light); border-radius: 16px; padding: 20px; }
+        .settings-block h3 { color: var(--accent-gold); margin-bottom: 15px; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 8px; font-size: 22px;}
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-size: 16px; color: var(--primary-light); font-weight: 700;}
+        input[type="text"], input[type="number"], select, textarea { font-family: inherit; width: 100%; background: #11261c; border: 2px solid var(--primary-light); border-radius: 10px; padding: 12px; color: #fff; font-size: 16px; font-weight: 700; outline: none;}
+        input[type="text"]:focus, input[type="number"]:focus, select:focus { border-color: var(--accent-gold); }
         
-        .paste-box-preview { width: 100%; height: 90px; border: 2px dashed var(--primary-light); background: rgba(0,0,0,0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #aaa; cursor: pointer; font-size: 14px; margin-top: 5px; overflow: hidden; }
+        .paste-box-preview { width: 100%; height: 100px; border: 3px dashed var(--primary-light); background: rgba(0,0,0,0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #aaa; cursor: pointer; font-size: 14px; margin-top: 5px; overflow: hidden; transition: all 0.2s;}
+        .paste-box-preview:hover { background: rgba(255,255,255,0.1); border-color: var(--accent-gold);}
         .paste-box-preview img { max-height: 100%; object-fit: contain; }
         
-        .question-table { width: 100%; border-collapse: collapse; font-size: 14px; background: rgba(0,0,0,0.3); border-radius: 8px; overflow: hidden; }
-        .question-table th { background: rgba(0,0,0,0.5); padding: 10px; text-align: left; color: var(--accent-gold); }
-        .question-table td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); vertical-align: middle; }
-        .question-table tr:last-child td { border-bottom: none; }
+        .question-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; font-size: 16px; }
+        .question-table th { background: transparent; padding: 10px; text-align: left; color: var(--accent-gold); }
+        .question-table td { padding: 12px 10px; background: rgba(0,0,0,0.3); vertical-align: middle; }
+        .question-table tr td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+        .question-table tr td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
         
-        .btn-sm { padding: 6px 12px; font-size: 14px; }
-        .toggle-switch { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .toggle-switch input { width: 40px; height: 20px; }
+        .btn-sm { padding: 8px 16px; font-size: 14px; border-radius: 10px;}
+        .toggle-switch { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 16px; font-weight: bold;}
+        .toggle-switch input { width: 24px; height: 24px; cursor: pointer;}
 
-        /* Scrollbar styling for settings */
-        ::-webkit-scrollbar { width: 8px; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+
+        ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: #11261c; }
-        ::-webkit-scrollbar-thumb { background: var(--secondary-dark); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 5px; }
     </style>
 </head>
 <body>
 
+    <!-- HOMEPAGE OVERLAY -->
+    <div id="homepage-screen">
+        <div class="hp-content-box">
+            <h1 id="hp-title">Connect and Sort</h1>
+            <h2 id="hp-subtitle">developed by Teacher Cris Saranza</h2>
+            
+            <div class="hp-instructions">
+                <p style="margin-bottom: 8px;">1. 👈 <strong>Drag</strong> to connect the dots in order.</p>
+                <p style="margin-bottom: 8px;">2. ✅ Click <strong>"Check Answer"</strong>.</p>
+                <p style="margin-bottom: 8px;">3. ♻️ <strong>Sort</strong> the item into the correct bin.</p>
+                <p style="color: #e74c3c; text-align: center; margin-top: 15px; background: rgba(231,76,60,0.1); padding: 8px; border-radius: 8px;">⚠️ Mistakes = 3 Second Penalty!</p>
+                <p style="color: #2980b9; text-align: center; margin-top: 8px; font-size: 16px;">💡 Tap an already selected dot to clear your line.</p>
+            </div>
+
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button class="chunky-btn green-btn huge" id="btn-start-app">PLAY</button>
+                <button class="chunky-btn gold-btn huge" id="btn-hp-settings">⚙️ SETTINGS</button>
+            </div>
+        </div>
+    </div>
+
     <div id="app-container">
-        
         <header>
             <div class="title-area">
-                <h1 id="game-title-text">Jungle Connect Game</h1>
+                <button class="chunky-btn gold-btn" id="btn-go-home" style="padding: 10px 15px; font-size: 16px;">🏠 Home</button>
+                <h1 id="game-title-text">Connect & Sort</h1>
             </div>
             <div class="global-controls">
-                <div class="audio-popover">
-                    <button class="jungle-btn btn-sm" id="btn-toggle-audio">🎵 Music: OFF</button>
-                    <input type="range" id="vol-slider" min="0" max="1" step="0.1" value="0.4" style="width:70px;">
-                </div>
-                <button class="jungle-btn" id="btn-toggle-mode">👥 Normal Team Mode</button>
-                <button class="jungle-btn green-btn" id="btn-open-settings">⚙️ Admin Console</button>
+                <button class="chunky-btn" id="btn-toggle-mode">👥 Switch Team Mode</button>
+                <button class="chunky-btn gold-btn" id="btn-open-settings">⚙️ Settings</button>
             </div>
         </header>
 
@@ -172,10 +236,10 @@
             <div class="game-zone" id="zone-left">
                 <div class="hud-row">
                     <div class="score-badge" id="score-left">Score: 0 / 0</div>
-                    <div class="score-badge" id="mode-badge-left">Single Player Mode</div>
+                    <div class="score-badge" id="mode-badge-left" style="color:var(--primary-dark); border-color:var(--primary-dark);">Single Player</div>
                 </div>
                 
-                <div class="wooden-sign">
+                <div class="game-panel">
                     <div class="answer-box" id="ans-box-left">Connect dots to answer!</div>
                     <div class="clue-pic-holder" id="clue-holder-left"></div>
                 </div>
@@ -185,16 +249,17 @@
                     <canvas class="confetti-canvas" id="confetti-left"></canvas>
                 </div>
 
-                <div style="padding:15px; text-align:center; z-index:5;">
-                    <button class="jungle-btn green-btn" id="btn-check-left" style="width:45%; max-width:220px; font-size:18px;">Check Answer</button>
-                    <button class="jungle-btn" id="btn-reset-left" style="width:45%; max-width:220px; margin-left:10px; font-size:18px;">Clear Paths</button>
+                <div style="padding:20px; text-align:center; z-index:5; display: flex; justify-content: center; gap: 15px;">
+                    <button class="chunky-btn green-btn" id="btn-check-left" style="width: 200px;">Check Answer</button>
+                    <button class="chunky-btn" id="btn-reset-left" style="width: 200px;">Clear Paths</button>
                 </div>
 
+                <!-- Left Overlays -->
                 <div class="feedback-overlay" id="sorting-overlay-left" style="z-index: 70;">
-                    <div class="wooden-sign feedback-card" style="max-width: 600px !important;">
-                        <div class="feedback-text" style="color: var(--accent-gold);">Sort It!</div>
+                    <div class="game-panel feedback-card" style="max-width: 650px !important;">
+                        <div class="feedback-text" style="color: var(--primary-dark);">Sort It!</div>
                         <div id="draggable-word-left" class="draggable-word" draggable="true" data-side="left">WORD</div>
-                        <div style="display: flex; justify-content: space-around; margin-top: 10px; gap: 10px;">
+                        <div style="display: flex; justify-content: space-around; margin-top: 20px; gap: 15px;">
                             <div class="drop-zone zone-trash" data-side="left" data-type="trash">🗑️ Trash</div>
                             <div class="drop-zone zone-recycle" data-side="left" data-type="recycle">♻️ Recycle</div>
                         </div>
@@ -202,27 +267,27 @@
                 </div>
 
                 <div class="feedback-overlay" id="penalty-left" style="z-index: 80;">
-                    <div class="wooden-sign feedback-card">
+                    <div class="game-panel feedback-card">
                         <div class="feedback-text feedback-fail" id="penalty-reason-left">Time Penalty!</div>
                         <div class="penalty-timer" id="penalty-timer-left">3</div>
-                        <div style="font-size: 20px;">Wait to try again...</div>
+                        <div style="font-size: 24px; color: #555; font-weight: bold;">Wait to try again...</div>
                     </div>
                 </div>
 
                 <div class="feedback-overlay" id="feedback-left" style="z-index: 90;">
-                    <div class="wooden-sign feedback-card">
-                        <div class="feedback-text" id="feedback-text-left">WINNER!</div>
-                        <p id="feedback-sub-left" style="margin-bottom:20px; color:#fff; font-size: 20px;"></p>
-                        <div style="display:flex; justify-content:center; gap:10px;">
-                            <button class="jungle-btn green-btn" id="btn-feedback-next-left" style="font-size: 18px;">Next Challenge</button>
-                            <button class="jungle-btn tournament-btn" id="btn-replay-left" style="font-size: 18px; display:none;">➡️ Next Matchup</button>
+                    <div class="game-panel feedback-card">
+                        <div class="feedback-text feedback-success" id="feedback-text-left">WINNER!</div>
+                        <p id="feedback-sub-left" style="margin-bottom:30px; color:#555; font-size: 24px; font-weight: bold;"></p>
+                        <div style="display:flex; justify-content:center; gap:15px;">
+                            <button class="chunky-btn green-btn" id="btn-feedback-next-left">Next Challenge</button>
+                            <button class="chunky-btn gold-btn" id="btn-replay-left" style="display:none;">➡️ Next Matchup</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="feedback-overlay" id="defeat-left" style="z-index: 95; background: rgba(0,0,0,0.85);">
-                    <div style="font-size: 70px; color: #95a5a6; font-weight: bold; font-family: 'Fredoka One', sans-serif;">Sorry!</div>
-                    <div style="font-size: 28px; color: #bdc3c7; margin-top: 10px;">The other team finished first.</div>
+                    <div style="font-size: 80px; color: #fff; font-weight: bold; text-shadow: 0 10px 20px rgba(0,0,0,0.5);">Too Slow!</div>
+                    <div style="font-size: 32px; color: var(--accent-gold); margin-top: 15px; font-weight: bold;">The other team finished first.</div>
                 </div>
             </div>
 
@@ -230,10 +295,10 @@
             <div class="game-zone" id="zone-right" style="display: none;">
                 <div class="hud-row">
                     <div class="score-badge" id="score-right">Score: 0 / 0</div>
-                    <div class="score-badge" id="mode-badge-right" style="color:#55efc4; border-color:#55efc4;">Team B</div>
+                    <div class="score-badge" id="mode-badge-right" style="color:var(--primary-dark); border-color:var(--primary-dark);">Team B</div>
                 </div>
                 
-                <div class="wooden-sign">
+                <div class="game-panel">
                     <div class="answer-box" id="ans-box-right">Connect dots to answer!</div>
                     <div class="clue-pic-holder" id="clue-holder-right"></div>
                 </div>
@@ -243,16 +308,17 @@
                     <canvas class="confetti-canvas" id="confetti-right"></canvas>
                 </div>
 
-                <div style="padding:15px; text-align:center; z-index:5;">
-                    <button class="jungle-btn green-btn" id="btn-check-right" style="width:45%; max-width:220px; font-size:18px;">Check Answer</button>
-                    <button class="jungle-btn" id="btn-reset-right" style="width:45%; max-width:220px; margin-left:10px; font-size:18px;">Clear Paths</button>
+                <div style="padding:20px; text-align:center; z-index:5; display: flex; justify-content: center; gap: 15px;">
+                    <button class="chunky-btn green-btn" id="btn-check-right" style="width: 200px;">Check Answer</button>
+                    <button class="chunky-btn" id="btn-reset-right" style="width: 200px;">Clear Paths</button>
                 </div>
 
+                <!-- Right Overlays -->
                 <div class="feedback-overlay" id="sorting-overlay-right" style="z-index: 70;">
-                    <div class="wooden-sign feedback-card" style="max-width: 600px !important;">
-                        <div class="feedback-text" style="color: var(--accent-gold);">Sort It!</div>
+                    <div class="game-panel feedback-card" style="max-width: 650px !important;">
+                        <div class="feedback-text" style="color: var(--primary-dark);">Sort It!</div>
                         <div id="draggable-word-right" class="draggable-word" draggable="true" data-side="right">WORD</div>
-                        <div style="display: flex; justify-content: space-around; margin-top: 10px; gap: 10px;">
+                        <div style="display: flex; justify-content: space-around; margin-top: 20px; gap: 15px;">
                             <div class="drop-zone zone-trash" data-side="right" data-type="trash">🗑️ Trash</div>
                             <div class="drop-zone zone-recycle" data-side="right" data-type="recycle">♻️ Recycle</div>
                         </div>
@@ -260,54 +326,62 @@
                 </div>
 
                 <div class="feedback-overlay" id="penalty-right" style="z-index: 80;">
-                    <div class="wooden-sign feedback-card">
+                    <div class="game-panel feedback-card">
                         <div class="feedback-text feedback-fail" id="penalty-reason-right">Time Penalty!</div>
                         <div class="penalty-timer" id="penalty-timer-right">3</div>
-                        <div style="font-size: 20px;">Wait to try again...</div>
+                        <div style="font-size: 24px; color: #555; font-weight: bold;">Wait to try again...</div>
                     </div>
                 </div>
 
                 <div class="feedback-overlay" id="feedback-right" style="z-index: 90;">
-                    <div class="wooden-sign feedback-card">
-                        <div class="feedback-text" id="feedback-text-right">WINNER!</div>
-                        <p id="feedback-sub-right" style="margin-bottom:20px; color:#fff; font-size: 20px;"></p>
-                        <div style="display:flex; justify-content:center; gap:10px;">
-                            <button class="jungle-btn green-btn" id="btn-feedback-next-right" style="font-size: 18px;">Next Challenge</button>
-                            <button class="jungle-btn tournament-btn" id="btn-replay-right" style="font-size: 18px; display:none;">➡️ Next Matchup</button>
+                    <div class="game-panel feedback-card">
+                        <div class="feedback-text feedback-success" id="feedback-text-right">WINNER!</div>
+                        <p id="feedback-sub-right" style="margin-bottom:30px; color:#555; font-size: 24px; font-weight: bold;"></p>
+                        <div style="display:flex; justify-content:center; gap:15px;">
+                            <button class="chunky-btn green-btn" id="btn-feedback-next-right">Next Challenge</button>
+                            <button class="chunky-btn gold-btn" id="btn-replay-right" style="display:none;">➡️ Next Matchup</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="feedback-overlay" id="defeat-right" style="z-index: 95; background: rgba(0,0,0,0.85);">
-                    <div style="font-size: 70px; color: #95a5a6; font-weight: bold; font-family: 'Fredoka One', sans-serif;">Sorry!</div>
-                    <div style="font-size: 28px; color: #bdc3c7; margin-top: 10px;">The other team finished first.</div>
+                    <div style="font-size: 80px; color: #fff; font-weight: bold; text-shadow: 0 10px 20px rgba(0,0,0,0.5);">Too Slow!</div>
+                    <div style="font-size: 32px; color: var(--accent-gold); margin-top: 15px; font-weight: bold;">The other team finished first.</div>
                 </div>
             </div>
         </main>
 
-        <div class="feedback-overlay active" id="welcome-screen" style="z-index: 200;">
-            <div class="wooden-sign feedback-card" style="padding: 30px 20px;">
-                <div class="feedback-text" style="color: var(--accent-gold);">🌴 Welcome to Connect & Sort! 🌴</div>
-                <div style="color: #fff; font-size: 20px; line-height: 1.6; margin-bottom: 25px; text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
-                    <p style="margin-bottom: 10px; font-weight: bold; text-align: center; color: #55efc4; font-size: 22px;">How to Play:</p>
-                    <p>1. 👈 **Drag your finger** to connect the dots and spell the word.</p>
-                    <p>2. ✅ Click **"Check Answer"** to test your sequence.</p>
-                    <p>3. ♻️ **Sort the item** into the correct bin (Trash or Recycle).</p>
-                    <p style="margin-top: 8px; color: #ff7675; text-align: center; font-weight:bold;">⚠️ Mistakes result in a 3-second penalty!</p>
-                </div>
-                <button class="jungle-btn green-btn" id="btn-close-welcome" style="font-size: 24px; padding: 12px 35px;">🎮 Play Game</button>
-            </div>
-        </div>
-
         <section id="settings-panel">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="color: var(--accent-gold);">⚙️ Teacher Administration Console</h2>
-                <button class="jungle-btn green-btn" id="btn-close-settings">💾 Save and Play</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h2 style="color: var(--accent-gold); font-size: 32px; text-shadow: 2px 2px 0 #000;">⚙️ Admin Console</h2>
+                <button class="chunky-btn green-btn" id="btn-close-settings">💾 Save and Play</button>
             </div>
 
             <div class="settings-grid">
-                
-                <!-- BLOCK 1: Data Entry -->
+                <!-- BLOCK 1: Homepage Customization -->
+                <div class="settings-block">
+                    <h3>🏠 Homepage Customization</h3>
+                    <div class="form-group">
+                        <label>Homepage Background Image</label>
+                        <input type="file" id="hp-bg-upload" accept="image/*" style="font-size:14px; padding: 6px;">
+                    </div>
+                    <div class="form-group">
+                        <label for="hp-font-size">Title Font Size (px)</label>
+                        <input type="number" id="hp-font-size" value="80" min="30" max="150">
+                    </div>
+                    <div class="form-group">
+                        <label for="hp-font-style">Homepage Font Style</label>
+                        <select id="hp-font-style">
+                            <option value="'Fredoka One', cursive">Fredoka One</option>
+                            <option value="'Comic Neue', cursive">Comic Neue</option>
+                            <option value="'Quicksand', sans-serif">Quicksand</option>
+                            <option value="'Baloo 2', cursive">Baloo 2</option>
+                            <option value="'Mali', cursive">Mali</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- BLOCK 2: Data Entry -->
                 <div class="settings-block">
                     <h3>➕ Create or Edit Challenge Item</h3>
                     <div class="form-group">
@@ -329,17 +403,17 @@
                         <input type="text" id="input-content" placeholder="e.g. Plastic bottle OR Apple">
                     </div>
                     <div class="form-group">
-                        <label>Optional Clue Picture (Click & press Ctrl+V to paste)</label>
+                        <label>Optional Clue Picture (Click & paste)</label>
                         <div class="paste-box-preview" id="image-paste-zone" tabIndex="0">
                             Click here & paste your photo (Ctrl+V)
                         </div>
                     </div>
-                    <button class="jungle-btn green-btn btn-sm" id="btn-add-question" style="width: 100%;">➕ Append to Pool</button>
+                    <button class="chunky-btn green-btn btn-sm" id="btn-add-question" style="width: 100%;">➕ Append to Pool</button>
                 </div>
 
-                <!-- BLOCK 2: Visual Themes & GitHub Sync -->
+                <!-- BLOCK 3: Visual Themes -->
                 <div class="settings-block">
-                    <h3>🎨 Visual Themes & Interface</h3>
+                    <h3>🎨 Game Theme & Interface</h3>
                     <div class="form-group">
                         <label for="theme-selector">Game Site Theme</label>
                         <select id="theme-selector">
@@ -353,33 +427,28 @@
                     </div>
                     <div class="form-group" style="margin-bottom: 20px;">
                         <label>Custom BG Image for Current Theme</label>
-                        <input type="file" id="theme-bg-upload" accept="image/*" style="font-size:12px; padding: 4px;">
+                        <input type="file" id="theme-bg-upload" accept="image/*" style="font-size:14px; padding: 6px;">
                     </div>
-                    
                     <div class="form-group">
-                        <label for="font-selector">Smartboard Display Font</label>
+                        <label for="font-selector">Game Interface Font Style</label>
                         <select id="font-selector">
-                            <option value="'Comic Neue', cursive">Comic Neue</option>
                             <option value="'Fredoka One', cursive">Fredoka One</option>
+                            <option value="'Comic Neue', cursive">Comic Neue</option>
                             <option value="'Quicksand', sans-serif">Quicksand</option>
                             <option value="'Nunito', sans-serif">Nunito</option>
                             <option value="'Baloo 2', cursive">Baloo 2</option>
-                            <option value="'Patrick Hand', cursive">Patrick Hand</option>
                             <option value="'Mali', cursive">Mali</option>
-                            <option value="'Short Stack', cursive">Short Stack</option>
-                            <option value="'Sniglet', cursive">Sniglet</option>
-                            <option value="'Delius', cursive">Delius</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- BLOCK 3: Tournament Rules -->
+                <!-- BLOCK 4: Tournament & Cloud Data -->
                 <div class="settings-block">
-                    <h3>🏆 Tournament Setup & Rules</h3>
+                    <h3>🏆 Tournament Setup</h3>
                     <div class="form-group">
                         <label for="input-num-teams">Number of Teams in Match</label>
                         <select id="input-num-teams">
-                            <option value="1">1 Team (Solo Race Challenge)</option>
+                            <option value="1">1 Team (Solo Race)</option>
                             <option value="2" selected>2 Teams</option>
                             <option value="3">3 Teams</option>
                             <option value="4">4 Teams</option>
@@ -391,51 +460,43 @@
                             <option value="10">10 Teams</option>
                         </select>
                     </div>
-                    <button class="jungle-btn tournament-btn btn-sm" id="btn-start-tournament" style="width:100%; margin-bottom: 15px;">🔥 Start Tournament Bracket</button>
-
+                    <button class="chunky-btn gold-btn btn-sm" id="btn-start-tournament" style="width:100%; margin-bottom: 15px;">🔥 Start Tournament</button>
                     <div class="form-group">
                         <div class="toggle-switch">
                             <input type="checkbox" id="sync-toggle" checked>
-                            <label for="sync-toggle"><strong>Synchronize Target Pools</strong> (Both teams get same sequences)</label>
+                            <label for="sync-toggle"><strong>Synchronize Target Pools</strong></label>
                         </div>
                     </div>
-                </div>
-
-                <!-- BLOCK 4: Data Management (GitHub Sync) -->
-                <div class="settings-block">
-                    <h3>☁️ GitHub Cloud Integration</h3>
-                    <p style="font-size:12px; color:#bbb; margin-bottom: 8px;">Connect to your GitHub repo to fetch <strong style="color:white;">sort.json</strong> and your theme backgrounds (<strong style="color:white;">1.jpg</strong> to <strong style="color:white;">6.jpg</strong>) automatically.</p>
-                    <div class="form-group">
-                        <input type="text" id="input-github-url" placeholder="https://raw.githubusercontent.com/username/repo/main/">
-                    </div>
-                    <button class="jungle-btn btn-sm" id="btn-github-sync" style="background:#3498db; border-color:#2980b9; width:100%; margin-bottom:15px;">🔄 Fetch GitHub Data</button>
-
-                    <hr style="border-color: var(--secondary-dark); margin: 15px 0;">
+                    <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
                     
+                    <h3>☁️ GitHub Cloud & Local Data</h3>
+                    <div class="form-group">
+                        <input type="text" id="input-github-url" placeholder="https://raw.githubusercontent.com/user/repo/main/">
+                    </div>
+                    <button class="chunky-btn btn-sm" id="btn-github-sync" style="background:#3498db; width:100%; margin-bottom:15px;">🔄 Fetch GitHub Data</button>
                     <div style="display:flex; gap:10px;">
-                        <button class="jungle-btn btn-sm" id="btn-export-data">📤 Export local .json</button>
-                        <button class="jungle-btn btn-sm" id="btn-import-trigger">📥 Load local .json</button>
+                        <button class="chunky-btn btn-sm" id="btn-export-data">📤 Export .json</button>
+                        <button class="chunky-btn btn-sm" id="btn-import-trigger">📥 Load .json</button>
                         <input type="file" id="file-import-input" accept=".json" style="display: none;">
                     </div>
-                    <button class="jungle-btn btn-sm" id="btn-clear-system" style="background:linear-gradient(to bottom, #d63031, #b2bec3); margin-top:10px;">⚠️ Factory Reset</button>
+                    <button class="chunky-btn btn-sm" id="btn-clear-system" style="background:#e74c3c; margin-top:15px; width:100%;">⚠️ Factory Reset</button>
                 </div>
 
                 <!-- BLOCK 5: Question Table -->
                 <div class="settings-block" style="grid-column: span 2;">
                     <h3>Current Challenge Item Pool (<span id="pool-count-label">0</span> Questions loaded)</h3>
-                    <div style="max-height: 250px; overflow-y: auto; margin-top:10px;">
+                    <div style="max-height: 350px; overflow-y: auto; margin-top:10px; padding-right: 10px;">
                         <table class="question-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 50px;">Img</th>
+                                    <th style="width: 60px;">Img</th>
                                     <th style="width: 100px;">Type</th>
                                     <th style="width: 100px;">Bin</th>
                                     <th>Target Answer</th>
-                                    <th style="width: 120px;">Actions</th>
+                                    <th style="width: 160px;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="settings-questions-container">
-                                <!-- Populated via JS -->
                             </tbody>
                         </table>
                     </div>
@@ -445,7 +506,6 @@
 
     </div>
 
-    <audio id="bg-audio" loop><source src="ES_Play Cabin - Andreas Ericson.mp3" type="audio/mpeg"></audio>
     <audio id="victory-audio"><source src="winner sound effect.mp3" type="audio/mpeg"></audio>
 
     <script>
@@ -459,14 +519,13 @@
             { id: 4, type: "spelling", category: "trash", tokens: ["S", "a", "n", "x", "i", "n", "g"], answer: "Sanxing", image: "" }
         ];
 
-        // Theme Data Dictionaries
         const THEME_DATA = {
-            "1": { name: "Jungle", bg: "1.jpg", colors: {"--primary-dark": "#2d6a4f", "--primary-light": "#52b788", "--secondary-dark": "#8c6239", "--secondary-light": "#b38659", "--accent-light": "#f4f1de", "--accent-gold": "#ffb703"} },
-            "2": { name: "Ocean", bg: "2.jpg", colors: {"--primary-dark": "#023e8a", "--primary-light": "#0096c7", "--secondary-dark": "#0077b6", "--secondary-light": "#48cae4", "--accent-light": "#caf0f8", "--accent-gold": "#ffb703"} },
-            "3": { name: "Space", bg: "3.jpg", colors: {"--primary-dark": "#240046", "--primary-light": "#5a189a", "--secondary-dark": "#10002b", "--secondary-light": "#7b2cbf", "--accent-light": "#e0aaff", "--accent-gold": "#ff9e00"} },
-            "4": { name: "Desert", bg: "4.jpg", colors: {"--primary-dark": "#e76f51", "--primary-light": "#f4a261", "--secondary-dark": "#8b4513", "--secondary-light": "#d4a373", "--accent-light": "#faedcd", "--accent-gold": "#ffb703"} },
-            "5": { name: "Cyberpunk",bg: "5.jpg", colors: {"--primary-dark": "#111111", "--primary-light": "#f72585", "--secondary-dark": "#222222", "--secondary-light": "#4cc9f0", "--accent-light": "#ffffff", "--accent-gold": "#b5179e"} },
-            "6": { name: "Winter", bg: "6.jpg", colors: {"--primary-dark": "#468faf", "--primary-light": "#89c2d9", "--secondary-dark": "#2a6f97", "--secondary-light": "#a9d6e5", "--accent-light": "#f8f9fa", "--accent-gold": "#ffb703"} }
+            "1": { name: "Jungle", bg: "1.jpg", colors: {"--primary-dark": "#2d6a4f", "--primary-light": "#52b788", "--secondary-dark": "#1b4332", "--secondary-light": "#74c69d", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} },
+            "2": { name: "Ocean", bg: "2.jpg", colors: {"--primary-dark": "#023e8a", "--primary-light": "#0096c7", "--secondary-dark": "#03045e", "--secondary-light": "#48cae4", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} },
+            "3": { name: "Space", bg: "3.jpg", colors: {"--primary-dark": "#3c096c", "--primary-light": "#7b2cbf", "--secondary-dark": "#10002b", "--secondary-light": "#9d4edd", "--accent-light": "#ffffff", "--accent-gold": "#ff9e00"} },
+            "4": { name: "Desert", bg: "4.jpg", colors: {"--primary-dark": "#e76f51", "--primary-light": "#f4a261", "--secondary-dark": "#bc4749", "--secondary-light": "#e9c46a", "--accent-light": "#ffffff", "--accent-gold": "#264653"} },
+            "5": { name: "Cyberpunk",bg: "5.jpg", colors: {"--primary-dark": "#7209b7", "--primary-light": "#f72585", "--secondary-dark": "#3a0ca3", "--secondary-light": "#4cc9f0", "--accent-light": "#ffffff", "--accent-gold": "#4361ee"} },
+            "6": { name: "Winter", bg: "6.jpg", colors: {"--primary-dark": "#2a6f97", "--primary-light": "#61a5c2", "--secondary-dark": "#014f86", "--secondary-light": "#89c2d9", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} }
         };
 
         let questionPool = JSON.parse(localStorage.getItem("jungle_game_pool")) || DEFAULT_QUESTIONS;
@@ -475,12 +534,12 @@
         let currentUploadedImageBase64 = ""; 
         let editingIndex = -1;
 
-        // Theme and GitHub globals
         let customBGs = JSON.parse(localStorage.getItem("jungle_game_bgs")) || {};
         let currentTheme = localStorage.getItem("jungle_game_theme") || "1";
         let githubBaseUrl = localStorage.getItem("jungle_game_github") || "";
+        
+        let hpData = JSON.parse(localStorage.getItem("jungle_game_hp")) || { bg: "", fontStyle: "'Fredoka One', cursive", fontSize: "80" };
 
-        // Tournament & Race Variables
         let tournamentTeams = [];
         let currentRoundQueue = [];
         let nextRoundQueue = [];
@@ -492,10 +551,9 @@
             right: { pool: [], index: 0, score: 0, currentChain: [], activeDrawing: false, lastMouseX: 0, lastMouseY: 0, confettiParticles: [], confettiActive: false, inPenalty: false }
         };
 
-        const audioEl = document.getElementById('bg-audio');
+        let renderQueue = { left: false, right: false }; // Hardware Acceleration Flag
+
         const victoryAudioEl = document.getElementById('victory-audio');
-        const audioBtn = document.getElementById('btn-toggle-audio');
-        const volSlider = document.getElementById('vol-slider');
 
         const AudioFX = {
             ctx: null,
@@ -523,6 +581,7 @@
             setupSortingDragAndDrop('left');
             setupSortingDragAndDrop('right');
             loadRulesFromStorage();
+            applyHomepageSettings();
             applyTheme(currentTheme);
             rebuildGameSession();
             renderSettingsUI();
@@ -537,6 +596,25 @@
             if(savedFont) { document.getElementById('font-selector').value = savedFont; document.body.style.fontFamily = savedFont; }
             if(githubBaseUrl) document.getElementById('input-github-url').value = githubBaseUrl;
             document.getElementById('theme-selector').value = currentTheme;
+            
+            document.getElementById('hp-font-size').value = hpData.fontSize;
+            document.getElementById('hp-font-style').value = hpData.fontStyle;
+        }
+
+        function applyHomepageSettings() {
+            const hpScreen = document.getElementById('homepage-screen');
+            const hpTitle = document.getElementById('hp-title');
+            const hpSubtitle = document.getElementById('hp-subtitle');
+            
+            hpTitle.style.fontSize = hpData.fontSize + 'px';
+            hpTitle.style.fontFamily = hpData.fontStyle;
+            hpSubtitle.style.fontFamily = hpData.fontStyle;
+            
+            if(hpData.bg) {
+                hpScreen.style.backgroundImage = `url('${hpData.bg}')`;
+            } else {
+                hpScreen.style.backgroundImage = document.getElementById('app-container').style.backgroundImage;
+            }
         }
 
         function applyTheme(themeId) {
@@ -550,12 +628,19 @@
             let bgUrl = customBGs[themeId] || (githubBaseUrl ? `${githubBaseUrl}${theme.bg}` : 'background.gif');
             document.getElementById('app-container').style.backgroundImage = `url('${bgUrl}')`;
             localStorage.setItem("jungle_game_theme", themeId);
+            
+            if(!hpData.bg) document.getElementById('homepage-screen').style.backgroundImage = `url('${bgUrl}')`;
         }
 
         function savePoolToStorage() {
             try { localStorage.setItem("jungle_game_pool", JSON.stringify(questionPool)); localStorage.setItem("jungle_game_sync", syncQuestions); } 
             catch(e) { alert("Storage limit warning! Try using smaller pictures."); }
             renderSettingsUI();
+        }
+
+        function saveHomepageData() {
+            localStorage.setItem("jungle_game_hp", JSON.stringify(hpData));
+            applyHomepageSettings();
         }
 
         function rebuildGameSession() {
@@ -591,15 +676,12 @@
             if(isTeamMode) {
                 zoneRight.style.display = 'flex';
                 modeBadgeLeft.innerText = "Team A"; modeBadgeRight.innerText = "Team B";
-                modeBadgeLeft.style.borderColor = "#fdcb6e"; modeBadgeLeft.style.color = "#fdcb6e";
                 titleText.innerText = isTournamentMode ? titleText.innerText : "Connect Race";
-                
                 document.getElementById('score-left').innerText = "RACE!";
                 document.getElementById('score-right').innerText = "RACE!";
             } else {
                 zoneRight.style.display = 'none';
                 modeBadgeLeft.innerText = "Single Player Mode";
-                modeBadgeLeft.style.borderColor = "var(--accent-gold)"; modeBadgeLeft.style.color = "var(--accent-gold)";
                 titleText.innerText = "Connect & Sort";
                 document.getElementById('score-left').innerText = "Score: 0";
             }
@@ -612,9 +694,7 @@
          ************************************************************************/
         function initTournament() {
             const numTeams = parseInt(document.getElementById('input-num-teams').value);
-            
             if(numTeams === 1) {
-                alert("Solo Race mode activated!");
                 isTournamentMode = false; isTeamMode = false;
                 document.getElementById('settings-panel').style.display = 'none';
                 rebuildGameSession();
@@ -631,14 +711,13 @@
 
             for (let i = 0; i < shuffled.length; i += 2) {
                 if (i + 1 < shuffled.length) { currentRoundQueue.push([shuffled[i], shuffled[i+1]]); } 
-                else { nextRoundQueue.push(shuffled[i]); } // Bye round
+                else { nextRoundQueue.push(shuffled[i]); }
             }
             loadNextMatchup();
         }
 
         function loadNextMatchup() {
             currentMatchFinished = false; 
-
             ['left', 'right'].forEach(side => {
                 document.getElementById(`feedback-${side}`).classList.remove('active');
                 document.getElementById(`defeat-${side}`).classList.remove('active');
@@ -660,7 +739,6 @@
             }
 
             const currentMatch = currentRoundQueue.shift();
-            
             if(currentMatch[1] === "BYE") {
                 alert(`${currentMatch[0]} gets a BYE round and advances automatically!`);
                 nextRoundQueue.push(currentMatch[0]); loadNextMatchup(); return;
@@ -719,17 +797,16 @@
 
                     AudioFX.victory(); triggerConfettiExplosion(side);
                     document.getElementById(`feedback-text-${side}`).innerText = "🏆 WINNER!";
-                    document.getElementById(`feedback-text-${side}`).className = "feedback-text feedback-success";
                     
                     const subEl = document.getElementById(`feedback-sub-${side}`);
                     const replayBtn = document.getElementById(`btn-replay-${side}`);
                     
                     if (isTournamentMode) {
                         nextRoundQueue.push(teamLabelName);
-                        subEl.innerHTML = `<strong style="color:var(--accent-gold); font-size:26px;">${teamLabelName} ADVANCES!</strong>`;
+                        subEl.innerHTML = `<span style="color:var(--primary-dark);">${teamLabelName} ADVANCES!</span>`;
                         replayBtn.style.display = "inline-block"; replayBtn.innerText = "➡️ Next Matchup"; replayBtn.onclick = () => loadNextMatchup();
                     } else {
-                        subEl.innerHTML = `<strong style="color:var(--accent-gold); font-size:26px;">${teamLabelName} Wins!</strong>`;
+                        subEl.innerHTML = `<span style="color:var(--primary-dark);">${teamLabelName} Wins!</span>`;
                         replayBtn.style.display = "inline-block"; replayBtn.innerText = "🔄 Replay Race"; replayBtn.onclick = () => rebuildGameSession();
                     }
                     
@@ -741,7 +818,7 @@
 
                 } else {
                     AudioFX.victory(); triggerConfettiExplosion(side);
-                    document.getElementById(`feedback-text-${side}`).innerText = "🏆 Pool Completed!";
+                    document.getElementById(`feedback-text-${side}`).innerText = "🏆 Completed!";
                     document.getElementById(`feedback-sub-${side}`).innerHTML = `Final Points: ${sideState.score}`;
                     document.getElementById(`btn-feedback-next-${side}`).style.display = "none";
                     
@@ -826,7 +903,7 @@
                 container.appendChild(node);
             });
 
-            setTimeout(() => { resizeCanvas(side); drawCanvasVisuals(side); }, 50);
+            setTimeout(() => { resizeCanvas(side); requestRender(side); }, 50);
         }
 
         function triggerConfettiExplosion(side) {
@@ -866,11 +943,23 @@
         }
 
         function stopConfettiAnimation(side) { state[side].confettiActive = false; const canvas = document.getElementById(`confetti-${side}`); if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height); }
+        
         function resizeCanvas(side) {
             const canvas = document.getElementById(`canvas-${side}`), container = document.getElementById(`canvas-container-${side}`);
             if(canvas) { canvas.width = container.clientWidth; canvas.height = container.clientHeight; }
             const confCanvas = document.getElementById(`confetti-${side}`);
             if(confCanvas) { confCanvas.width = container.clientWidth; confCanvas.height = container.clientHeight; }
+        }
+
+        // Hardware-Accelerated Rendering Queue
+        function requestRender(side) {
+            if(!renderQueue[side]) {
+                renderQueue[side] = true;
+                requestAnimationFrame(() => {
+                    drawCanvasVisuals(side);
+                    renderQueue[side] = false;
+                });
+            }
         }
 
         function drawCanvasVisuals(side) {
@@ -881,11 +970,10 @@
             const sideState = state[side];
             if(!sideState || sideState.currentChain.length === 0) return;
 
-            const baseColor = THEME_DATA[currentTheme].colors["--primary-dark"];
             const highlightColor = THEME_DATA[currentTheme].colors["--primary-light"];
 
-            ctx.lineWidth = 8; ctx.strokeStyle = baseColor; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-            ctx.shadowColor = 'rgba(0,0,0,0.4)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 3;
+            ctx.lineWidth = 14; ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.shadowColor = highlightColor; ctx.shadowBlur = 20;
             ctx.beginPath();
             
             sideState.currentChain.forEach((nodeId, index) => {
@@ -899,7 +987,7 @@
             if(sideState.activeDrawing && sideState.currentChain.length > 0) ctx.lineTo(sideState.lastMouseX, sideState.lastMouseY);
             ctx.stroke();
 
-            ctx.beginPath(); ctx.lineWidth = 3; ctx.strokeStyle = highlightColor; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+            ctx.beginPath(); ctx.lineWidth = 6; ctx.strokeStyle = '#fff'; ctx.shadowBlur = 0;
             sideState.currentChain.forEach((nodeId, index) => {
                 const el = document.getElementById(`node-${side}-${nodeId}`);
                 if(el) {
@@ -914,10 +1002,16 @@
 
         function handleNodeSelectionStart(e, side, item, node) {
             e.stopPropagation(); const sideState = state[side];
-            if(sideState.inPenalty || currentMatchFinished || sideState.currentChain.includes(item.id)) return;
+            if(sideState.inPenalty || currentMatchFinished) return;
+            
+            // Re-click an already selected dot to clear the path
+            if(sideState.currentChain.includes(item.id)) {
+                clearCurrentPaths(side);
+                return;
+            }
             
             sideState.currentChain.push(item.id); node.classList.add('selected'); sideState.activeDrawing = true;
-            updateTrackingCoordinates(e, side); updateAnswerPreviewDisplay(side); drawCanvasVisuals(side);
+            updateTrackingCoordinates(e, side); updateAnswerPreviewDisplay(side); requestRender(side);
         }
 
         function updateTrackingCoordinates(e, side) {
@@ -931,7 +1025,7 @@
             const sideState = state[side];
             if(!sideState.activeDrawing || sideState.inPenalty) return;
             
-            updateTrackingCoordinates(e, side); drawCanvasVisuals(side);
+            updateTrackingCoordinates(e, side); requestRender(side);
             
             let cX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
             let cY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
@@ -948,7 +1042,7 @@
 
         function terminatePointerTracking(side) {
             if(!state[side].activeDrawing) return;
-            state[side].activeDrawing = false; drawCanvasVisuals(side);
+            state[side].activeDrawing = false; requestRender(side);
         }
 
         function updateAnswerPreviewDisplay(side) {
@@ -962,7 +1056,7 @@
         function clearCurrentPaths(side) {
             state[side].currentChain = []; state[side].activeDrawing = false;
             document.getElementById(`canvas-container-${side}`).querySelectorAll('.dot-node').forEach(node => node.classList.remove('selected'));
-            updateAnswerPreviewDisplay(side); drawCanvasVisuals(side);
+            updateAnswerPreviewDisplay(side); requestRender(side);
         }
 
         function evaluateCurrentSubmission(side) {
@@ -999,11 +1093,11 @@
             dragWord.addEventListener('dragend', (e) => { e.target.style.opacity = '1'; });
 
             dropZones.forEach(zone => {
-                zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.style.background = 'rgba(255, 255, 255, 0.3)'; });
-                zone.addEventListener('dragleave', (e) => { zone.style.background = zone.dataset.type === 'trash' ? 'rgba(231, 76, 60, 0.2)' : 'rgba(46, 204, 113, 0.2)'; });
+                zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.style.background = 'rgba(255, 255, 255, 0.5)'; });
+                zone.addEventListener('dragleave', (e) => { zone.style.background = zone.dataset.type === 'trash' ? 'rgba(231, 76, 60, 0.1)' : 'rgba(46, 204, 113, 0.1)'; });
                 zone.addEventListener('drop', (e) => {
                     e.preventDefault();
-                    zone.style.background = zone.dataset.type === 'trash' ? 'rgba(231, 76, 60, 0.2)' : 'rgba(46, 204, 113, 0.2)';
+                    zone.style.background = zone.dataset.type === 'trash' ? 'rgba(231, 76, 60, 0.1)' : 'rgba(46, 204, 113, 0.1)';
                     processDrop(zone, dragWord, side);
                 });
             });
@@ -1049,20 +1143,36 @@
          * GLOBAL INPUT EVENT PIPELINE
          ************************************************************************/
         function initDOMEvents() {
+            // Homepage Navigation
+            document.getElementById('btn-go-home').addEventListener('click', () => {
+                document.getElementById('homepage-screen').classList.remove('hidden');
+            });
+            document.getElementById('btn-start-app').addEventListener('click', () => {
+                document.getElementById('homepage-screen').classList.add('hidden');
+            });
+            document.getElementById('btn-hp-settings').addEventListener('click', () => {
+                document.getElementById('settings-panel').style.display = 'block';
+            });
+
+            // Settings Listeners
             document.getElementById('font-selector').addEventListener('change', (e) => {
                 document.body.style.fontFamily = e.target.value; localStorage.setItem("jungle_game_font", e.target.value);
             });
 
-            document.getElementById('theme-selector').addEventListener('change', (e) => {
-                applyTheme(e.target.value);
-            });
-
-            document.getElementById('btn-close-welcome').addEventListener('click', () => {
-                document.getElementById('welcome-screen').classList.remove('active');
-                if(audioEl.paused) {
-                    audioEl.volume = volSlider.value;
-                    audioEl.play().then(() => { audioBtn.innerText = "🎵 Music: ON"; audioBtn.style.background = "linear-gradient(to bottom, #2ecc71, #27ae60)"; }).catch(() => {});
-                }
+            document.getElementById('theme-selector').addEventListener('change', (e) => { applyTheme(e.target.value); });
+            
+            document.getElementById('hp-font-size').addEventListener('input', (e) => { hpData.fontSize = e.target.value; saveHomepageData(); });
+            document.getElementById('hp-font-style').addEventListener('change', (e) => { hpData.fontStyle = e.target.value; saveHomepageData(); });
+            
+            document.getElementById('hp-bg-upload').addEventListener('change', function(e) {
+                const file = e.target.files[0]; if(!file) return;
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    compressImagePipeline(evt.target.result, 1920, (compressedBase64) => {
+                        hpData.bg = compressedBase64; saveHomepageData(); alert("Homepage background updated!");
+                    });
+                };
+                reader.readAsDataURL(file);
             });
 
             ['left', 'right'].forEach(side => {
@@ -1102,21 +1212,11 @@
                     compressImagePipeline(evt.target.result, 1920, (compressedBase64) => {
                         customBGs[currentTheme] = compressedBase64;
                         localStorage.setItem("jungle_game_bgs", JSON.stringify(customBGs));
-                        applyTheme(currentTheme);
-                        alert("Custom background applied for " + THEME_DATA[currentTheme].name + " theme!");
+                        applyTheme(currentTheme); alert("Custom background applied for " + THEME_DATA[currentTheme].name + " theme!");
                     });
                 };
                 reader.readAsDataURL(file);
             });
-
-            audioBtn.addEventListener('click', () => {
-                if(audioEl.paused) {
-                    audioEl.play().then(() => { audioBtn.innerText = "🎵 Music: ON"; audioBtn.style.background = "linear-gradient(to bottom, #2ecc71, #27ae60)"; }).catch(() => {});
-                } else {
-                    audioEl.pause(); audioBtn.innerText = "🎵 Music: OFF"; audioBtn.style.background = "linear-gradient(to bottom, var(--secondary-dark), #5c3a21)";
-                }
-            });
-            volSlider.addEventListener('input', (e) => audioEl.volume = e.target.value);
         }
 
         /************************************************************************
@@ -1167,17 +1267,17 @@
             sortedPool.forEach((q) => {
                 const originalIndex = questionPool.findIndex(item => item.id === q.id);
                 const tr = document.createElement('tr');
-                let imgThumbHtml = q.image ? `<img src="${q.image}" style="max-height:30px; border-radius:4px;">` : 'N/A';
+                let imgThumbHtml = q.image ? `<img src="${q.image}" style="max-height:40px; border-radius:6px; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">` : 'N/A';
                 let catIcon = (q.category === 'trash') ? '🗑️ Trash' : '♻️ Recycle';
                 
                 tr.innerHTML = `
                     <td>${imgThumbHtml}</td>
-                    <td><span style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px; font-size:12px;">${q.type.toUpperCase()}</span></td>
-                    <td>${catIcon}</td>
-                    <td><strong>${q.answer}</strong></td>
-                    <td style="display:flex; gap:5px;">
-                        <button class="jungle-btn btn-sm" style="background:#3498db; border-color:#2980b9; box-shadow:0 2px 0 #2980b9; padding:4px 8px;" onclick="editQuestionItemByIndex(${originalIndex})">Edit</button>
-                        <button class="jungle-btn btn-sm" style="background:#e74c3c; border-color:#c0392b; box-shadow:0 2px 0 #c0392b; padding:4px 8px;" onclick="deleteQuestionItemByIndex(${originalIndex})">Delete</button>
+                    <td><span style="background:var(--primary-dark); padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">${q.type.toUpperCase()}</span></td>
+                    <td style="font-weight:bold;">${catIcon}</td>
+                    <td><strong style="color:var(--accent-gold); font-size:18px;">${q.answer}</strong></td>
+                    <td style="display:flex; gap:8px;">
+                        <button class="chunky-btn btn-sm" style="background:#3498db; box-shadow:0 4px 0 #2980b9;" onclick="editQuestionItemByIndex(${originalIndex})">Edit</button>
+                        <button class="chunky-btn btn-sm" style="background:#e74c3c; box-shadow:0 4px 0 #c0392b;" onclick="deleteQuestionItemByIndex(${originalIndex})">Delete</button>
                     </td>
                 `;
                 container.appendChild(tr);
@@ -1270,10 +1370,12 @@
                 localStorage.removeItem("jungle_game_pool");
                 localStorage.removeItem("jungle_game_bgs");
                 localStorage.removeItem("jungle_game_github");
+                localStorage.removeItem("jungle_game_hp");
                 customBGs = {}; githubBaseUrl = "";
+                hpData = { bg: "", fontStyle: "'Fredoka One', cursive", fontSize: "80" };
                 document.getElementById('input-github-url').value = "";
                 questionPool = [...DEFAULT_QUESTIONS];
-                savePoolToStorage(); applyTheme(currentTheme); rebuildGameSession();
+                savePoolToStorage(); applyHomepageSettings(); applyTheme(currentTheme); rebuildGameSession();
             }
         }
 
