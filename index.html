@@ -96,7 +96,6 @@
         .game-zone:nth-child(2) { border-left: 6px dashed rgba(255,255,255,0.4); background: rgba(0, 0, 0, 0.15); }
         .game-zone.dimmed { filter: grayscale(100%) brightness(40%); pointer-events: none; }
 
-        /* Solid Game Panel for Performance */
         .game-panel {
             background: rgba(255, 255, 255, 0.95);
             border: 6px solid var(--accent-gold); border-radius: 24px; padding: 14px 20px;
@@ -235,7 +234,7 @@
                 <h1 id="game-title-text">Connect & Sort</h1>
             </div>
             <div class="global-controls">
-                <button class="chunky-btn" id="btn-toggle-mode">👥 Switch Team Mode</button>
+                <button class="chunky-btn" id="btn-toggle-mode">👥 Switch to Team Mode</button>
                 <button class="chunky-btn gold-btn" id="btn-open-settings">⚙️ Settings</button>
             </div>
         </header>
@@ -361,7 +360,7 @@
         <section id="settings-panel">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                 <h2 style="color: var(--accent-gold); font-size: 32px; text-shadow: 2px 2px 0 #000;">⚙️ Admin Console</h2>
-                <button class="chunky-btn green-btn" id="btn-close-settings">💾 Save and Play</button>
+                <button class="chunky-btn green-btn" id="btn-close-settings">💾 Save and Close</button>
             </div>
 
             <div class="settings-grid">
@@ -546,8 +545,8 @@
         let currentUploadedImageBase64 = ""; 
         let editingIndex = -1;
 
-        let availableQuestions = []; // Global pool tracker for slicing
-        let gameActive = false; // Gates input until START is pressed
+        let availableQuestions = []; 
+        let gameActive = false; 
 
         let customBGs = JSON.parse(localStorage.getItem("jungle_game_bgs")) || {};
         let currentTheme = localStorage.getItem("jungle_game_theme") || "1";
@@ -566,7 +565,7 @@
             right: { pool: [], index: 0, score: 0, currentChain: [], activeDrawing: false, lastMouseX: 0, lastMouseY: 0, confettiParticles: [], confettiActive: false, inPenalty: false }
         };
 
-        let renderQueue = { left: false, right: false }; // Hardware Acceleration Flag
+        let renderQueue = { left: false, right: false }; 
 
         const victoryAudioEl = document.getElementById('victory-audio');
 
@@ -653,8 +652,7 @@
                 localStorage.setItem("jungle_game_pool", JSON.stringify(questionPool)); 
                 localStorage.setItem("jungle_game_sync", syncQuestions); 
                 localStorage.setItem("jungle_game_q_count", questionsPerMatch);
-            } 
-            catch(e) { alert("Storage limit warning! Try using smaller pictures."); }
+            } catch(e) { alert("Storage limit warning! Try using smaller pictures."); }
             renderSettingsUI();
         }
 
@@ -696,15 +694,15 @@
             state.right.index = 0; state.right.score = 0;
             
             currentMatchFinished = false;
-            gameActive = false;
+            gameActive = false; 
             
             stopConfettiAnimation('left'); stopConfettiAnimation('right');
             
-            // Wipe Canvas and Overlays Clean
             ['left', 'right'].forEach(side => {
                 document.getElementById(`canvas-container-${side}`).querySelectorAll('.dot-node').forEach(n => n.remove());
                 clearCurrentPaths(side);
-                document.getElementById(`clue-holder-${side}`).style.display = "none";
+                const clueHolder = document.getElementById(`clue-holder-${side}`);
+                if(clueHolder) clueHolder.style.display = "none";
                 document.getElementById(`ans-box-${side}`).innerText = "Waiting to start...";
                 document.getElementById(`feedback-${side}`).classList.remove('active');
                 document.getElementById(`defeat-${side}`).classList.remove('active');
@@ -715,7 +713,7 @@
         }
 
         function rebuildGameSession() {
-            availableQuestions = []; // Full reset of the running deck
+            availableQuestions = []; 
             preparePools();
             applyLayoutUIModes();
         }
@@ -725,18 +723,22 @@
             const modeBadgeLeft = document.getElementById('mode-badge-left');
             const modeBadgeRight = document.getElementById('mode-badge-right');
             const titleText = document.getElementById('game-title-text');
+            const toggleBtn = document.getElementById('btn-toggle-mode');
 
             if(isTeamMode) {
                 zoneRight.style.display = 'flex';
-                modeBadgeLeft.innerText = "Team A"; modeBadgeRight.innerText = "Team B";
+                modeBadgeLeft.innerText = isTournamentMode ? modeBadgeLeft.innerText : "Team A";
+                modeBadgeRight.innerText = isTournamentMode ? modeBadgeRight.innerText : "Team B";
                 titleText.innerText = isTournamentMode ? titleText.innerText : "Connect Race";
                 document.getElementById('score-left').innerText = "RACE!";
                 document.getElementById('score-right').innerText = "RACE!";
+                toggleBtn.innerText = "👤 Switch to Solo";
             } else {
                 zoneRight.style.display = 'none';
                 modeBadgeLeft.innerText = "Single Player Mode";
                 titleText.innerText = "Connect & Sort";
                 document.getElementById('score-left').innerText = "Score: 0";
+                toggleBtn.innerText = "👥 Switch to Team Mode";
             }
         }
 
@@ -748,7 +750,7 @@
             questionsPerMatch = parseInt(document.getElementById('input-questions-per-match').value) || 5;
             savePoolToStorage();
             
-            document.getElementById('homepage-screen').classList.add('hidden'); // Ensure homepage hides
+            document.getElementById('homepage-screen').classList.add('hidden');
 
             if(numTeams === 1) {
                 isTournamentMode = false; isTeamMode = false;
@@ -768,7 +770,7 @@
             
             let shuffled = [...tournamentTeams].sort(() => Math.random() - 0.5);
             currentRoundQueue = []; nextRoundQueue = [];
-            availableQuestions = []; // Reset deck for tournament
+            availableQuestions = []; 
 
             for (let i = 0; i < shuffled.length; i += 2) {
                 if (i + 1 < shuffled.length) { currentRoundQueue.push([shuffled[i], shuffled[i+1]]); } 
@@ -802,6 +804,7 @@
             }
 
             preparePools();
+            applyLayoutUIModes();
             
             document.getElementById('mode-badge-left').innerText = currentMatch[0];
             document.getElementById('mode-badge-right').innerText = currentMatch[1];
@@ -831,7 +834,7 @@
             timerEl.innerText = timeLeft;
             
             const interval = setInterval(() => {
-                if(!gameActive) { clearInterval(interval); return; } // Break if game halted
+                if(!gameActive) { clearInterval(interval); return; } 
                 timeLeft--;
                 if(timeLeft > 0) { timerEl.innerText = timeLeft; } 
                 else { clearInterval(interval); overlay.classList.remove('active'); state[side].inPenalty = false; }
@@ -1032,7 +1035,6 @@
             e.stopPropagation(); const sideState = state[side];
             if(!gameActive || sideState.inPenalty || currentMatchFinished) return;
             
-            // Clear path if tapping an already selected node
             if(sideState.currentChain.includes(item.id)) {
                 clearCurrentPaths(side);
                 return;
@@ -1176,12 +1178,18 @@
                 isTournamentMode = false; isTeamMode = false; gameActive = false;
                 document.getElementById('homepage-screen').classList.remove('hidden');
                 document.getElementById('ready-screen').classList.remove('active');
+                
+                // Immediately fix the toggle button UI when going home
+                document.getElementById('btn-toggle-mode').innerText = "👥 Switch to Team Mode";
+                
                 rebuildGameSession();
             });
             
             document.getElementById('btn-start-app').addEventListener('click', () => {
                 document.getElementById('homepage-screen').classList.add('hidden');
                 questionsPerMatch = parseInt(document.getElementById('input-questions-per-match').value) || 5;
+                syncQuestions = document.getElementById('sync-toggle').checked;
+                
                 availableQuestions = []; preparePools(); applyLayoutUIModes();
                 
                 document.getElementById('ready-title').innerText = isTeamMode ? "Team Race" : "Single Player";
@@ -1233,10 +1241,15 @@
             });
 
             document.getElementById('btn-toggle-mode').addEventListener('click', () => { 
-                isTeamMode = !isTeamMode; isTournamentMode = false; gameActive = false;
+                isTeamMode = !isTeamMode; 
+                isTournamentMode = false; 
+                gameActive = false;
+                
+                // Immediately fix the toggle UI
+                document.getElementById('btn-toggle-mode').innerText = isTeamMode ? "👤 Switch to Solo" : "👥 Switch to Team Mode";
+
                 availableQuestions = []; preparePools(); applyLayoutUIModes(); 
                 
-                // Show ready screen so game can be started
                 document.getElementById('ready-title').innerText = isTeamMode ? "Team Race" : "Single Player";
                 document.getElementById('ready-subtitle').innerText = isTeamMode ? "Team A vs Team B" : "Connect & Sort Challenge";
                 document.getElementById('ready-screen').classList.add('active');
@@ -1252,7 +1265,7 @@
                 document.getElementById('settings-panel').style.display = 'none';
                 
                 if(!isTournamentMode && !document.getElementById('homepage-screen').classList.contains('hidden')) {
-                    // Just updating settings while on homepage
+                    // Do nothing, just update settings while on homepage
                 } else if(!isTournamentMode) {
                     gameActive = false; 
                     availableQuestions = []; preparePools(); applyLayoutUIModes();
