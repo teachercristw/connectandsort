@@ -747,6 +747,8 @@
             const numTeams = parseInt(document.getElementById('input-num-teams').value);
             questionsPerMatch = parseInt(document.getElementById('input-questions-per-match').value) || 5;
             savePoolToStorage();
+            
+            document.getElementById('homepage-screen').classList.add('hidden'); // Ensure homepage hides
 
             if(numTeams === 1) {
                 isTournamentMode = false; isTeamMode = false;
@@ -829,7 +831,7 @@
             timerEl.innerText = timeLeft;
             
             const interval = setInterval(() => {
-                if(!gameActive) { clearInterval(interval); return; } // Break if home button pressed
+                if(!gameActive) { clearInterval(interval); return; } // Break if game halted
                 timeLeft--;
                 if(timeLeft > 0) { timerEl.innerText = timeLeft; } 
                 else { clearInterval(interval); overlay.classList.remove('active'); state[side].inPenalty = false; }
@@ -1233,6 +1235,11 @@
             document.getElementById('btn-toggle-mode').addEventListener('click', () => { 
                 isTeamMode = !isTeamMode; isTournamentMode = false; gameActive = false;
                 availableQuestions = []; preparePools(); applyLayoutUIModes(); 
+                
+                // Show ready screen so game can be started
+                document.getElementById('ready-title').innerText = isTeamMode ? "Team Race" : "Single Player";
+                document.getElementById('ready-subtitle').innerText = isTeamMode ? "Team A vs Team B" : "Connect & Sort Challenge";
+                document.getElementById('ready-screen').classList.add('active');
             });
             
             document.getElementById('btn-start-tournament').addEventListener('click', initTournament);
@@ -1245,8 +1252,9 @@
                 document.getElementById('settings-panel').style.display = 'none';
                 
                 if(!isTournamentMode && !document.getElementById('homepage-screen').classList.contains('hidden')) {
-                    // Do nothing, just updated settings on homepage
+                    // Just updating settings while on homepage
                 } else if(!isTournamentMode) {
+                    gameActive = false; 
                     availableQuestions = []; preparePools(); applyLayoutUIModes();
                     document.getElementById('ready-title').innerText = isTeamMode ? "Team Race" : "Single Player";
                     document.getElementById('ready-subtitle').innerText = "Settings Updated";
@@ -1429,9 +1437,11 @@
                 localStorage.removeItem("jungle_game_bgs");
                 localStorage.removeItem("jungle_game_github");
                 localStorage.removeItem("jungle_game_hp");
+                localStorage.removeItem("jungle_game_q_count");
                 customBGs = {}; githubBaseUrl = "";
                 hpData = { bg: "", fontStyle: "'Fredoka One', cursive", fontSize: "80" };
                 document.getElementById('input-github-url').value = "";
+                questionsPerMatch = 5;
                 questionPool = [...DEFAULT_QUESTIONS];
                 savePoolToStorage(); applyHomepageSettings(); applyTheme(currentTheme); rebuildGameSession();
             }
