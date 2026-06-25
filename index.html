@@ -25,20 +25,25 @@
             width: 100vw; height: 100vh;
         }
 
+        /* Video & Image Background Managers */
+        .bg-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; object-fit: cover; background-size: cover; background-position: center;
+        }
+
         /* Homepage Styling */
         #homepage-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('background.gif'); background-size: cover; background-position: center;
             z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease; background: #1a3a2a;
         }
         #homepage-screen.hidden { opacity: 0; pointer-events: none; }
         
         .hp-content-box {
             background: rgba(255, 255, 255, 0.95); 
             padding: 40px 60px; border-radius: 30px; text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 8px solid var(--accent-gold);
-            animation: float 4s ease-in-out infinite; max-width: 90%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); border: 8px solid var(--accent-gold);
+            animation: float 4s ease-in-out infinite; max-width: 90%; z-index: 2;
         }
         
         #hp-title {
@@ -60,12 +65,11 @@
         /* Application Container */
         #app-container {
             position: relative; width: 100%; height: 100%; display: flex; flex-direction: column;
-            background-image: url('background.gif'); background-size: cover; background-position: center;
-            transition: background-image 0.5s ease;
+            background: transparent;
         }
 
         header {
-            background: rgba(255, 255, 255, 0.85); border-bottom: 4px solid rgba(255,255,255,0.4);
+            background: rgba(255, 255, 255, 0.9); border-bottom: 4px solid rgba(255,255,255,0.4);
             padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 10;
         }
 
@@ -80,7 +84,7 @@
             background: var(--secondary-light); border: none; border-radius: 16px;
             padding: 14px 24px; cursor: pointer; font-size: 18px; text-transform: uppercase; letter-spacing: 1px;
             box-shadow: 0 8px 0 var(--secondary-dark), 0 15px 20px rgba(0,0,0,0.3);
-            transition: all 0.1s ease; outline: none; position: relative;
+            transition: all 0.1s ease; outline: none; position: relative; z-index: 100;
         }
         .chunky-btn:active { transform: translateY(8px); box-shadow: 0 0px 0 var(--secondary-dark), 0 5px 10px rgba(0,0,0,0.3); }
         .chunky-btn.green-btn { background: var(--primary-light); box-shadow: 0 8px 0 var(--primary-dark), 0 15px 20px rgba(0,0,0,0.3); }
@@ -89,6 +93,9 @@
         .chunky-btn.gold-btn:active { box-shadow: 0 0px 0 #d4a373, 0 5px 10px rgba(0,0,0,0.3); }
         .chunky-btn.huge { font-size: 28px; padding: 20px 40px; border-radius: 24px; box-shadow: 0 12px 0 var(--primary-dark), 0 20px 30px rgba(0,0,0,0.3);}
         .chunky-btn.huge:active { transform: translateY(12px); box-shadow: 0 0px 0 var(--primary-dark), 0 10px 15px rgba(0,0,0,0.3); }
+        
+        .start-overlay-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 60; font-size: 40px; padding: 25px 60px; border-radius: 30px; box-shadow: 0 15px 0 var(--primary-dark), 0 30px 40px rgba(0,0,0,0.5); }
+        .start-overlay-btn:active { transform: translate(-50%, calc(-50% + 15px)); box-shadow: 0 0px 0 var(--primary-dark), 0 15px 20px rgba(0,0,0,0.5); }
 
         #game-stage { flex: 1; display: flex; position: relative; width: 100%; height: calc(100% - 78px); }
 
@@ -129,8 +136,9 @@
             font-weight: 800; font-size: 26px; color: #d35400; cursor: pointer; z-index: 3;
             transform: translate(-50%, -50%); transition: transform 0.1s, background 0.2s;
             text-align: center; word-break: break-word; padding: 8px; line-height: 1.1;
-            animation: pulseDot 2s infinite;
+            animation: pulseDot 2s infinite; opacity: 0; pointer-events: none;
         }
+        .dot-node.visible { opacity: 1; pointer-events: auto; }
         .dot-node:hover { transform: translate(-50%, -50%) scale(1.1); }
         .dot-node.selected { background: radial-gradient(circle at 30% 30%, #fff, #55efc4); border-color: #00b894; color: #006266; animation: none; transform: translate(-50%, -50%) scale(1.15); box-shadow: 0 10px 25px rgba(0, 230, 118, 0.6); }
 
@@ -199,6 +207,10 @@
 
     <!-- HOMEPAGE OVERLAY -->
     <div id="homepage-screen">
+        <!-- Media BG Layer -->
+        <img id="hp-bg-img" class="bg-layer" src="background.gif">
+        <video id="hp-bg-vid" class="bg-layer" autoplay loop muted playsinline style="display:none;"></video>
+        
         <div class="hp-content-box">
             <h1 id="hp-title">Connect and Sort</h1>
             <h2 id="hp-subtitle">developed by Teacher Cris Saranza</h2>
@@ -218,16 +230,12 @@
         </div>
     </div>
 
-    <!-- READY SCREEN OVERLAY (Gating the start) -->
-    <div class="feedback-overlay" id="ready-screen" style="z-index: 200;">
-        <div class="game-panel feedback-card" style="padding: 40px 30px;">
-            <div class="feedback-text" id="ready-title" style="color: var(--primary-dark);">Get Ready!</div>
-            <div id="ready-subtitle" style="font-size: 28px; font-weight: bold; color: #555; margin-bottom: 30px;">Challenge Starting</div>
-            <button class="chunky-btn green-btn huge" id="btn-start-match">START GAME</button>
-        </div>
-    </div>
-
+    <!-- MAIN GAME CONTAINER -->
     <div id="app-container">
+        <!-- Game Media BG Layer -->
+        <img id="app-bg-img" class="bg-layer" src="background.gif">
+        <video id="app-bg-vid" class="bg-layer" autoplay loop muted playsinline style="display:none;"></video>
+
         <header>
             <div class="title-area">
                 <button class="chunky-btn gold-btn" id="btn-go-home" style="padding: 10px 15px; font-size: 16px;">🏠 Home</button>
@@ -240,6 +248,10 @@
         </header>
 
         <main id="game-stage">
+            
+            <!-- CENTRAL START BUTTON -->
+            <button class="chunky-btn green-btn start-overlay-btn" id="btn-start-match">▶️ START MATCH</button>
+
             <!-- LEFT TEAM ZONE -->
             <div class="game-zone" id="zone-left">
                 <div class="hud-row">
@@ -248,7 +260,7 @@
                 </div>
                 
                 <div class="game-panel">
-                    <div class="answer-box" id="ans-box-left">Waiting to start...</div>
+                    <div class="answer-box" id="ans-box-left">Press Start!</div>
                     <div class="clue-pic-holder" id="clue-holder-left"></div>
                 </div>
 
@@ -306,7 +318,7 @@
                 </div>
                 
                 <div class="game-panel">
-                    <div class="answer-box" id="ans-box-right">Waiting to start...</div>
+                    <div class="answer-box" id="ans-box-right">Press Start!</div>
                     <div class="clue-pic-holder" id="clue-holder-right"></div>
                 </div>
 
@@ -368,7 +380,11 @@
                 <div class="settings-block">
                     <h3>🏠 Homepage Customization</h3>
                     <div class="form-group">
-                        <label>Homepage Background Image</label>
+                        <label>Homepage Background URL (Image/Video)</label>
+                        <input type="text" id="hp-bg-url" placeholder="http://... (leave blank to match game)">
+                    </div>
+                    <div class="form-group">
+                        <label>Or Upload Image locally</label>
                         <input type="file" id="hp-bg-upload" accept="image/*" style="font-size:14px; padding: 6px;">
                     </div>
                     <div class="form-group">
@@ -431,8 +447,18 @@
                             <option value="6">6. Winter Frost (Ice Blue/White)</option>
                         </select>
                     </div>
-                    <div class="form-group" style="margin-bottom: 20px;">
-                        <label>Custom BG Image for Current Theme</label>
+                    <div class="form-group">
+                        <label>Media Extension (If using GitHub)</label>
+                        <select id="theme-media-ext">
+                            <option value=".jpg">.jpg (Image)</option>
+                            <option value=".png">.png (Image)</option>
+                            <option value=".gif">.gif (Animated)</option>
+                            <option value=".mp4">.mp4 (Video)</option>
+                            <option value=".webm">.webm (Video)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Or Upload Image locally</label>
                         <input type="file" id="theme-bg-upload" accept="image/*" style="font-size:14px; padding: 6px;">
                     </div>
                     <div class="form-group">
@@ -530,12 +556,12 @@
         ];
 
         const THEME_DATA = {
-            "1": { name: "Jungle", bg: "1.jpg", colors: {"--primary-dark": "#2d6a4f", "--primary-light": "#52b788", "--secondary-dark": "#1b4332", "--secondary-light": "#74c69d", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} },
-            "2": { name: "Ocean", bg: "2.jpg", colors: {"--primary-dark": "#023e8a", "--primary-light": "#0096c7", "--secondary-dark": "#03045e", "--secondary-light": "#48cae4", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} },
-            "3": { name: "Space", bg: "3.jpg", colors: {"--primary-dark": "#3c096c", "--primary-light": "#7b2cbf", "--secondary-dark": "#10002b", "--secondary-light": "#9d4edd", "--accent-light": "#ffffff", "--accent-gold": "#ff9e00"} },
-            "4": { name: "Desert", bg: "4.jpg", colors: {"--primary-dark": "#e76f51", "--primary-light": "#f4a261", "--secondary-dark": "#bc4749", "--secondary-light": "#e9c46a", "--accent-light": "#ffffff", "--accent-gold": "#264653"} },
-            "5": { name: "Cyberpunk",bg: "5.jpg", colors: {"--primary-dark": "#7209b7", "--primary-light": "#f72585", "--secondary-dark": "#3a0ca3", "--secondary-light": "#4cc9f0", "--accent-light": "#ffffff", "--accent-gold": "#4361ee"} },
-            "6": { name: "Winter", bg: "6.jpg", colors: {"--primary-dark": "#2a6f97", "--primary-light": "#61a5c2", "--secondary-dark": "#014f86", "--secondary-light": "#89c2d9", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} }
+            "1": { name: "Jungle", bg: "1", colors: {"--primary-dark": "#2d6a4f", "--primary-light": "#52b788", "--secondary-dark": "#1b4332", "--secondary-light": "#74c69d", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} },
+            "2": { name: "Ocean", bg: "2", colors: {"--primary-dark": "#023e8a", "--primary-light": "#0096c7", "--secondary-dark": "#03045e", "--secondary-light": "#48cae4", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} },
+            "3": { name: "Space", bg: "3", colors: {"--primary-dark": "#3c096c", "--primary-light": "#7b2cbf", "--secondary-dark": "#10002b", "--secondary-light": "#9d4edd", "--accent-light": "#ffffff", "--accent-gold": "#ff9e00"} },
+            "4": { name: "Desert", bg: "4", colors: {"--primary-dark": "#e76f51", "--primary-light": "#f4a261", "--secondary-dark": "#bc4749", "--secondary-light": "#e9c46a", "--accent-light": "#ffffff", "--accent-gold": "#264653"} },
+            "5": { name: "Cyberpunk",bg: "5", colors: {"--primary-dark": "#7209b7", "--primary-light": "#f72585", "--secondary-dark": "#3a0ca3", "--secondary-light": "#4cc9f0", "--accent-light": "#ffffff", "--accent-gold": "#4361ee"} },
+            "6": { name: "Winter", bg: "6", colors: {"--primary-dark": "#2a6f97", "--primary-light": "#61a5c2", "--secondary-dark": "#014f86", "--secondary-light": "#89c2d9", "--accent-light": "#ffffff", "--accent-gold": "#ffb703"} }
         };
 
         let questionPool = JSON.parse(localStorage.getItem("jungle_game_pool")) || DEFAULT_QUESTIONS;
@@ -551,6 +577,7 @@
         let customBGs = JSON.parse(localStorage.getItem("jungle_game_bgs")) || {};
         let currentTheme = localStorage.getItem("jungle_game_theme") || "1";
         let githubBaseUrl = localStorage.getItem("jungle_game_github") || "";
+        let themeExt = localStorage.getItem("jungle_game_ext") || ".jpg";
         
         let hpData = JSON.parse(localStorage.getItem("jungle_game_hp")) || { bg: "", fontStyle: "'Fredoka One', cursive", fontSize: "80" };
 
@@ -588,15 +615,15 @@
         };
 
         /************************************************************************
-         * DOM LIFECYCLE ENGINE & THEMES
+         * DOM LIFECYCLE ENGINE & BACKGROUND MANAGERS
          ************************************************************************/
         window.addEventListener('DOMContentLoaded', () => {
             initDOMEvents();
             setupSortingDragAndDrop('left');
             setupSortingDragAndDrop('right');
             loadRulesFromStorage();
-            applyHomepageSettings();
             applyTheme(currentTheme);
+            applyHomepageSettings();
             renderSettingsUI();
             setupPasteFeature();
             
@@ -608,21 +635,48 @@
             });
         });
 
+        // Universal Background Renderer (Handles JPG, PNG, GIF, MP4, WEBM)
+        function renderMediaBackground(imgElId, vidElId, sourceUrl) {
+            const imgEl = document.getElementById(imgElId);
+            const vidEl = document.getElementById(vidElId);
+            
+            if(!sourceUrl) {
+                imgEl.style.backgroundImage = '';
+                vidEl.style.display = 'none'; vidEl.src = '';
+                return;
+            }
+
+            const isVideo = sourceUrl.match(/\.(mp4|webm|mov|ogg)$/i) || sourceUrl.startsWith('data:video');
+            
+            if(isVideo) {
+                imgEl.style.backgroundImage = '';
+                vidEl.src = sourceUrl;
+                vidEl.style.display = 'block';
+                vidEl.play().catch(e => console.log("Autoplay prevented:", e));
+            } else {
+                vidEl.style.display = 'none';
+                vidEl.src = '';
+                imgEl.style.backgroundImage = `url('${sourceUrl}')`;
+            }
+        }
+
         function loadRulesFromStorage() {
             const savedSync = localStorage.getItem("jungle_game_sync");
             if(savedSync !== null) { syncQuestions = savedSync === 'true'; document.getElementById('sync-toggle').checked = syncQuestions; }
             const savedFont = localStorage.getItem("jungle_game_font");
             if(savedFont) { document.getElementById('font-selector').value = savedFont; document.body.style.fontFamily = savedFont; }
             if(githubBaseUrl) document.getElementById('input-github-url').value = githubBaseUrl;
+            
             document.getElementById('theme-selector').value = currentTheme;
+            document.getElementById('theme-media-ext').value = themeExt;
             document.getElementById('input-questions-per-match').value = questionsPerMatch;
             
             document.getElementById('hp-font-size').value = hpData.fontSize;
             document.getElementById('hp-font-style').value = hpData.fontStyle;
+            if(hpData.bg && !hpData.bg.startsWith('data:')) document.getElementById('hp-bg-url').value = hpData.bg;
         }
 
         function applyHomepageSettings() {
-            const hpScreen = document.getElementById('homepage-screen');
             const hpTitle = document.getElementById('hp-title');
             const hpSubtitle = document.getElementById('hp-subtitle');
             
@@ -630,8 +684,13 @@
             hpTitle.style.fontFamily = hpData.fontStyle;
             hpSubtitle.style.fontFamily = hpData.fontStyle;
             
-            if(hpData.bg) { hpScreen.style.backgroundImage = `url('${hpData.bg}')`; } 
-            else { hpScreen.style.backgroundImage = document.getElementById('app-container').style.backgroundImage; }
+            let bgUrl = hpData.bg;
+            if(!bgUrl) {
+                // Fallback to game theme
+                const theme = THEME_DATA[currentTheme];
+                bgUrl = customBGs[currentTheme] || (githubBaseUrl ? `${githubBaseUrl}${theme.bg}${themeExt}` : 'background.gif');
+            }
+            renderMediaBackground('hp-bg-img', 'hp-bg-vid', bgUrl);
         }
 
         function applyTheme(themeId) {
@@ -640,11 +699,14 @@
             
             for(let key in theme.colors) { document.documentElement.style.setProperty(key, theme.colors[key]); }
             
-            let bgUrl = customBGs[themeId] || (githubBaseUrl ? `${githubBaseUrl}${theme.bg}` : 'background.gif');
-            document.getElementById('app-container').style.backgroundImage = `url('${bgUrl}')`;
-            localStorage.setItem("jungle_game_theme", themeId);
+            let bgUrl = customBGs[themeId] || (githubBaseUrl ? `${githubBaseUrl}${theme.bg}${themeExt}` : 'background.gif');
+            renderMediaBackground('app-bg-img', 'app-bg-vid', bgUrl);
             
-            if(!hpData.bg) document.getElementById('homepage-screen').style.backgroundImage = `url('${bgUrl}')`;
+            localStorage.setItem("jungle_game_theme", themeId);
+            localStorage.setItem("jungle_game_ext", themeExt);
+            
+            // Sync homepage if it relies on default
+            if(!hpData.bg) applyHomepageSettings();
         }
 
         function savePoolToStorage() {
@@ -696,26 +758,25 @@
             currentMatchFinished = false;
             gameActive = false; 
             
+            document.getElementById('btn-start-match').style.display = 'block';
+            
             stopConfettiAnimation('left'); stopConfettiAnimation('right');
             
             ['left', 'right'].forEach(side => {
-                document.getElementById(`canvas-container-${side}`).querySelectorAll('.dot-node').forEach(n => n.remove());
+                const container = document.getElementById(`canvas-container-${side}`);
+                container.querySelectorAll('.dot-node').forEach(n => n.remove());
                 clearCurrentPaths(side);
+                
                 const clueHolder = document.getElementById(`clue-holder-${side}`);
                 if(clueHolder) clueHolder.style.display = "none";
-                document.getElementById(`ans-box-${side}`).innerText = "Waiting to start...";
+                
+                document.getElementById(`ans-box-${side}`).innerText = "Press Start!";
                 document.getElementById(`feedback-${side}`).classList.remove('active');
                 document.getElementById(`defeat-${side}`).classList.remove('active');
                 document.getElementById(`sorting-overlay-${side}`).classList.remove('active');
                 document.getElementById(`penalty-${side}`).classList.remove('active');
                 document.getElementById(`zone-${side}`).classList.remove('dimmed');
             });
-        }
-
-        function rebuildGameSession() {
-            availableQuestions = []; 
-            preparePools();
-            applyLayoutUIModes();
         }
 
         function applyLayoutUIModes() {
@@ -750,22 +811,17 @@
             questionsPerMatch = parseInt(document.getElementById('input-questions-per-match').value) || 5;
             savePoolToStorage();
             
+            document.getElementById('settings-panel').style.display = 'none';
             document.getElementById('homepage-screen').classList.add('hidden');
 
             if(numTeams === 1) {
                 isTournamentMode = false; isTeamMode = false;
-                document.getElementById('settings-panel').style.display = 'none';
-                
                 availableQuestions = []; preparePools(); applyLayoutUIModes();
-                document.getElementById('ready-title').innerText = "Solo Challenge";
-                document.getElementById('ready-subtitle').innerText = `${questionsPerMatch} Questions`;
-                document.getElementById('ready-screen').classList.add('active');
                 return;
             }
 
             tournamentTeams = Array.from({length: numTeams}, (_, i) => `Team ${i + 1}`);
             isTournamentMode = true; isTeamMode = true;
-            document.getElementById('settings-panel').style.display = 'none';
             document.getElementById('zone-right').style.display = 'flex';
             
             let shuffled = [...tournamentTeams].sort(() => Math.random() - 0.5);
@@ -783,9 +839,7 @@
             if (currentRoundQueue.length === 0) {
                 if (nextRoundQueue.length === 1) {
                     alert(`🏆 ${nextRoundQueue[0].toUpperCase()} IS THE TOURNAMENT CHAMPION! 🏆`);
-                    isTournamentMode = false; isTeamMode = false; 
-                    rebuildGameSession(); 
-                    document.getElementById('homepage-screen').classList.remove('hidden');
+                    goHome();
                     return;
                 }
                 currentRoundQueue = [];
@@ -809,10 +863,6 @@
             document.getElementById('mode-badge-left').innerText = currentMatch[0];
             document.getElementById('mode-badge-right').innerText = currentMatch[1];
             document.getElementById('game-title-text').innerText = `🏆 TOURNAMENT: ${currentMatch[0]} vs ${currentMatch[1]}`;
-            
-            document.getElementById('ready-title').innerText = `🏆 TOURNAMENT`;
-            document.getElementById('ready-subtitle').innerText = `${currentMatch[0]} vs ${currentMatch[1]}`;
-            document.getElementById('ready-screen').classList.add('active');
         }
 
         /************************************************************************
@@ -868,12 +918,7 @@
                     } else {
                         subEl.innerHTML = `<span style="color:var(--primary-dark);">${teamLabelName} Wins!</span>`;
                         replayBtn.style.display = "inline-block"; replayBtn.innerText = "🔄 Replay Race"; 
-                        replayBtn.onclick = () => {
-                            preparePools();
-                            document.getElementById('ready-title').innerText = "Team Race";
-                            document.getElementById('ready-subtitle').innerText = "Team A vs Team B";
-                            document.getElementById('ready-screen').classList.add('active');
-                        };
+                        replayBtn.onclick = () => { preparePools(); applyLayoutUIModes(); };
                     }
                     
                     document.getElementById(`btn-feedback-next-${side}`).style.display = "none";
@@ -891,12 +936,7 @@
                     
                     const replayBtn = document.getElementById(`btn-replay-${side}`);
                     replayBtn.style.display = "inline-block"; replayBtn.innerText = "🔄 Replay Game"; 
-                    replayBtn.onclick = () => {
-                        preparePools();
-                        document.getElementById('ready-title').innerText = "Single Player";
-                        document.getElementById('ready-subtitle').innerText = "Connect & Sort Challenge";
-                        document.getElementById('ready-screen').classList.add('active');
-                    };
+                    replayBtn.onclick = () => { preparePools(); applyLayoutUIModes(); };
                     document.getElementById(`feedback-${side}`).classList.add('active');
                 }
             } else {
@@ -907,41 +947,6 @@
         /************************************************************************
          * CANVAS GENERATION & INTERACTIVE CONNECTIONS
          ************************************************************************/
-        function generateSpreadLayout(count, side) {
-            const container = document.getElementById(`canvas-container-${side}`);
-            const w = container.clientWidth || 600, h = container.clientHeight || 400;
-            const minDistancePixels = Math.max(130, w * 0.20); 
-            let points = [], attempts = 0, success = false;
-
-            while (attempts < 150 && !success) {
-                points = []; success = true;
-                for (let i = 0; i < count; i++) {
-                    let p = { x: 15 + Math.random() * 70, y: 20 + Math.random() * 60 };
-                    for (let j = 0; j < points.length; j++) {
-                        let dx = (p.x - points[j].x) * (w / 100), dy = (p.y - points[j].y) * (h / 100);
-                        if (Math.sqrt(dx * dx + dy * dy) < minDistancePixels) { success = false; break; }
-                    }
-                    if (!success) break;
-                    points.push(p);
-                }
-                attempts++;
-            }
-            if (!success || points.length < count) {
-                points = [];
-                const cols = Math.ceil(Math.sqrt(count)), rows = Math.ceil(count / cols);
-                let index = 0;
-                for (let r = 0; r < rows; r++) {
-                    for (let c = 0; c < cols; c++) {
-                        if (index >= count) break;
-                        let gridX = 20 + (c * (60 / Math.max(1, cols - 1))), gridY = 25 + (r * (50 / Math.max(1, rows - 1)));
-                        if (cols === 1) gridX = 50; if (rows === 1) gridY = 50;
-                        points.push({ x: gridX, y: gridY }); index++;
-                    }
-                }
-            }
-            return points;
-        }
-
         function setupChallengeRound(side) {
             const sideState = state[side];
             sideState.currentChain = []; sideState.activeDrawing = false;
@@ -963,12 +968,44 @@
             }
 
             const rawTokens = currentQuestion.tokens;
-            const spreadCoordinates = generateSpreadLayout(rawTokens.length, side);
-            let shuffledLayouts = rawTokens.map((t, i) => ({token: t, id: i, x: spreadCoordinates[i].x, y: spreadCoordinates[i].y})).sort(() => Math.random() - 0.5);
+            
+            // Distribute points ensuring they don't overlap
+            const w = container.clientWidth || 600, h = container.clientHeight || 400;
+            const minDistancePixels = Math.max(130, w * 0.20); 
+            let points = [], attempts = 0, success = false;
+
+            while (attempts < 150 && !success) {
+                points = []; success = true;
+                for (let i = 0; i < rawTokens.length; i++) {
+                    let p = { x: 15 + Math.random() * 70, y: 20 + Math.random() * 60 };
+                    for (let j = 0; j < points.length; j++) {
+                        let dx = (p.x - points[j].x) * (w / 100), dy = (p.y - points[j].y) * (h / 100);
+                        if (Math.sqrt(dx * dx + dy * dy) < minDistancePixels) { success = false; break; }
+                    }
+                    if (!success) break;
+                    points.push(p);
+                }
+                attempts++;
+            }
+            if (!success || points.length < rawTokens.length) {
+                points = [];
+                const cols = Math.ceil(Math.sqrt(rawTokens.length)), rows = Math.ceil(rawTokens.length / cols);
+                let index = 0;
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        if (index >= rawTokens.length) break;
+                        let gridX = 20 + (c * (60 / Math.max(1, cols - 1))), gridY = 25 + (r * (50 / Math.max(1, rows - 1)));
+                        if (cols === 1) gridX = 50; if (rows === 1) gridY = 50;
+                        points.push({ x: gridX, y: gridY }); index++;
+                    }
+                }
+            }
+
+            let shuffledLayouts = rawTokens.map((t, i) => ({token: t, id: i, x: points[i].x, y: points[i].y})).sort(() => Math.random() - 0.5);
 
             shuffledLayouts.forEach((item) => {
                 const node = document.createElement('div');
-                node.className = 'dot-node'; node.id = `node-${side}-${item.id}`;
+                node.className = 'dot-node visible'; node.id = `node-${side}-${item.id}`;
                 node.innerText = item.token; node.style.left = `${item.x}%`; node.style.top = `${item.y}%`;
                 node.dataset.itemId = item.id;
                 node.addEventListener('mousedown', (e) => handleNodeSelectionStart(e, side, item, node));
@@ -1036,8 +1073,7 @@
             if(!gameActive || sideState.inPenalty || currentMatchFinished) return;
             
             if(sideState.currentChain.includes(item.id)) {
-                clearCurrentPaths(side);
-                return;
+                clearCurrentPaths(side); return;
             }
             
             sideState.currentChain.push(item.id); node.classList.add('selected'); sideState.activeDrawing = true;
@@ -1113,7 +1149,7 @@
         }
 
         /************************************************************************
-         * DUAL SMARTBOARD DRAG-AND-DROP (SORTING MINI-GAME)
+         * DUAL SMARTBOARD DRAG-AND-DROP
          ************************************************************************/
         function setupSortingDragAndDrop(side) {
             const dragWord = document.getElementById(`draggable-word-${side}`);
@@ -1162,68 +1198,97 @@
             const droppedCategory = zone.dataset.type;
             document.getElementById(`sorting-overlay-${side}`).classList.remove('active');
 
-            if(targetCategory === droppedCategory) {
-                AudioFX.success(); advanceChallengeIndex(side);
-            } else {
-                triggerPenalty(side, "Wrong Bin!");
-            }
+            if(targetCategory === droppedCategory) { AudioFX.success(); advanceChallengeIndex(side); } 
+            else { triggerPenalty(side, "Wrong Bin!"); }
         }
+
+        /************************************************************************
+         * CONFETTI & UI EFFECTS
+         ************************************************************************/
+        function triggerConfettiExplosion(side) {
+            const canvas = document.getElementById(`confetti-${side}`);
+            if(!canvas) return;
+            const container = document.getElementById(`canvas-container-${side}`);
+            canvas.width = container.clientWidth; canvas.height = container.clientHeight;
+            const sideState = state[side];
+            sideState.confettiParticles = []; sideState.confettiActive = true;
+            const colors = ['#ffb703', '#fb8500', '#52b788', '#2d6a4f', '#2ecc71', '#e74c3c', '#9b59b6', '#3498db'];
+
+            for (let i = 0; i < 120; i++) {
+                sideState.confettiParticles.push({
+                    x: canvas.width / 2, y: canvas.height - 20, size: Math.random() * 8 + 6,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speedX: (Math.random() - 0.5) * 15, speedY: -(Math.random() * 12 + 10),
+                    gravity: 0.3, rotation: Math.random() * 360, rotationSpeed: (Math.random() - 0.5) * 10
+                });
+            }
+
+            function updateConfettiFrame() {
+                if (!sideState.confettiActive) return;
+                const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let activeParticles = false;
+                sideState.confettiParticles.forEach(p => {
+                    p.x += p.speedX; p.y += p.speedY; p.speedY += p.gravity; p.rotation += p.rotationSpeed;
+                    if (p.y < canvas.height && p.x > 0 && p.x < canvas.width) {
+                        activeParticles = true;
+                        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation * Math.PI / 180);
+                        ctx.fillStyle = p.color; ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size); ctx.restore();
+                    }
+                });
+                if (activeParticles) requestAnimationFrame(updateConfettiFrame);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            requestAnimationFrame(updateConfettiFrame);
+        }
+
+        function stopConfettiAnimation(side) { state[side].confettiActive = false; const canvas = document.getElementById(`confetti-${side}`); if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height); }
 
         /************************************************************************
          * GLOBAL INPUT EVENT PIPELINE
          ************************************************************************/
+        function goHome() {
+            isTournamentMode = false; isTeamMode = false; gameActive = false;
+            document.getElementById('homepage-screen').classList.remove('hidden');
+            document.getElementById('btn-toggle-mode').innerText = "👥 Switch to Team Mode";
+            document.getElementById('btn-start-match').style.display = 'block';
+            availableQuestions = []; // Flush deck
+        }
+
         function initDOMEvents() {
-            // Home & Play Setup
-            document.getElementById('btn-go-home').addEventListener('click', () => {
-                isTournamentMode = false; isTeamMode = false; gameActive = false;
-                document.getElementById('homepage-screen').classList.remove('hidden');
-                document.getElementById('ready-screen').classList.remove('active');
-                
-                // Immediately fix the toggle button UI when going home
-                document.getElementById('btn-toggle-mode').innerText = "👥 Switch to Team Mode";
-                
-                rebuildGameSession();
-            });
+            document.getElementById('btn-go-home').addEventListener('click', goHome);
             
             document.getElementById('btn-start-app').addEventListener('click', () => {
                 document.getElementById('homepage-screen').classList.add('hidden');
                 questionsPerMatch = parseInt(document.getElementById('input-questions-per-match').value) || 5;
                 syncQuestions = document.getElementById('sync-toggle').checked;
-                
                 availableQuestions = []; preparePools(); applyLayoutUIModes();
-                
-                document.getElementById('ready-title').innerText = isTeamMode ? "Team Race" : "Single Player";
-                document.getElementById('ready-subtitle').innerText = isTeamMode ? "Team A vs Team B" : "Connect & Sort Challenge";
-                document.getElementById('ready-screen').classList.add('active');
             });
             
+            // Central Game Start Button
             document.getElementById('btn-start-match').addEventListener('click', () => {
-                document.getElementById('ready-screen').classList.remove('active');
+                document.getElementById('btn-start-match').style.display = 'none';
                 gameActive = true;
                 setupChallengeRound('left');
                 if(isTeamMode) setupChallengeRound('right');
             });
             
-            document.getElementById('btn-hp-settings').addEventListener('click', () => {
-                document.getElementById('settings-panel').style.display = 'block';
-            });
+            document.getElementById('btn-hp-settings').addEventListener('click', () => { document.getElementById('settings-panel').style.display = 'block'; });
 
             // Settings Listeners
-            document.getElementById('font-selector').addEventListener('change', (e) => {
-                document.body.style.fontFamily = e.target.value; localStorage.setItem("jungle_game_font", e.target.value);
-            });
-
+            document.getElementById('font-selector').addEventListener('change', (e) => { document.body.style.fontFamily = e.target.value; localStorage.setItem("jungle_game_font", e.target.value); });
             document.getElementById('theme-selector').addEventListener('change', (e) => { applyTheme(e.target.value); });
+            document.getElementById('theme-media-ext').addEventListener('change', (e) => { themeExt = e.target.value; applyTheme(currentTheme); });
             
             document.getElementById('hp-font-size').addEventListener('input', (e) => { hpData.fontSize = e.target.value; saveHomepageData(); });
             document.getElementById('hp-font-style').addEventListener('change', (e) => { hpData.fontStyle = e.target.value; saveHomepageData(); });
+            document.getElementById('hp-bg-url').addEventListener('input', (e) => { hpData.bg = e.target.value; saveHomepageData(); });
             
             document.getElementById('hp-bg-upload').addEventListener('change', function(e) {
                 const file = e.target.files[0]; if(!file) return;
                 const reader = new FileReader();
                 reader.onload = function(evt) {
                     compressImagePipeline(evt.target.result, 1920, (compressedBase64) => {
-                        hpData.bg = compressedBase64; saveHomepageData(); alert("Homepage background updated!");
+                        hpData.bg = compressedBase64; document.getElementById('hp-bg-url').value = ''; saveHomepageData(); alert("Homepage background updated!");
                     });
                 };
                 reader.readAsDataURL(file);
@@ -1241,18 +1306,9 @@
             });
 
             document.getElementById('btn-toggle-mode').addEventListener('click', () => { 
-                isTeamMode = !isTeamMode; 
-                isTournamentMode = false; 
-                gameActive = false;
-                
-                // Immediately fix the toggle UI
+                isTeamMode = !isTeamMode; isTournamentMode = false; gameActive = false;
                 document.getElementById('btn-toggle-mode').innerText = isTeamMode ? "👤 Switch to Solo" : "👥 Switch to Team Mode";
-
                 availableQuestions = []; preparePools(); applyLayoutUIModes(); 
-                
-                document.getElementById('ready-title').innerText = isTeamMode ? "Team Race" : "Single Player";
-                document.getElementById('ready-subtitle').innerText = isTeamMode ? "Team A vs Team B" : "Connect & Sort Challenge";
-                document.getElementById('ready-screen').classList.add('active');
             });
             
             document.getElementById('btn-start-tournament').addEventListener('click', initTournament);
@@ -1264,14 +1320,8 @@
                 savePoolToStorage();
                 document.getElementById('settings-panel').style.display = 'none';
                 
-                if(!isTournamentMode && !document.getElementById('homepage-screen').classList.contains('hidden')) {
-                    // Do nothing, just update settings while on homepage
-                } else if(!isTournamentMode) {
-                    gameActive = false; 
+                if(!isTournamentMode && document.getElementById('homepage-screen').classList.contains('hidden')) {
                     availableQuestions = []; preparePools(); applyLayoutUIModes();
-                    document.getElementById('ready-title').innerText = isTeamMode ? "Team Race" : "Single Player";
-                    document.getElementById('ready-subtitle').innerText = "Settings Updated";
-                    document.getElementById('ready-screen').classList.add('active');
                 }
             });
 
@@ -1449,14 +1499,17 @@
                 localStorage.removeItem("jungle_game_pool");
                 localStorage.removeItem("jungle_game_bgs");
                 localStorage.removeItem("jungle_game_github");
+                localStorage.removeItem("jungle_game_ext");
                 localStorage.removeItem("jungle_game_hp");
                 localStorage.removeItem("jungle_game_q_count");
-                customBGs = {}; githubBaseUrl = "";
+                customBGs = {}; githubBaseUrl = ""; themeExt = ".jpg";
                 hpData = { bg: "", fontStyle: "'Fredoka One', cursive", fontSize: "80" };
+                
                 document.getElementById('input-github-url').value = "";
+                document.getElementById('hp-bg-url').value = "";
                 questionsPerMatch = 5;
                 questionPool = [...DEFAULT_QUESTIONS];
-                savePoolToStorage(); applyHomepageSettings(); applyTheme(currentTheme); rebuildGameSession();
+                savePoolToStorage(); applyHomepageSettings(); applyTheme("1"); goHome();
             }
         }
 
