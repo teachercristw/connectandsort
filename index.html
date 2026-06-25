@@ -35,7 +35,7 @@
         #homepage-screen.hidden { opacity: 0; pointer-events: none; }
         
         .hp-content-box {
-            background: rgba(255, 255, 255, 0.95); /* Solidified for performance */
+            background: rgba(255, 255, 255, 0.95); 
             padding: 40px 60px; border-radius: 30px; text-align: center;
             box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 8px solid var(--accent-gold);
             animation: float 4s ease-in-out infinite; max-width: 90%;
@@ -137,7 +137,7 @@
 
         .feedback-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.85); z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
         }
         .feedback-overlay.active { opacity: 1; pointer-events: auto; }
@@ -219,6 +219,15 @@
         </div>
     </div>
 
+    <!-- READY SCREEN OVERLAY (Gating the start) -->
+    <div class="feedback-overlay" id="ready-screen" style="z-index: 200;">
+        <div class="game-panel feedback-card" style="padding: 40px 30px;">
+            <div class="feedback-text" id="ready-title" style="color: var(--primary-dark);">Get Ready!</div>
+            <div id="ready-subtitle" style="font-size: 28px; font-weight: bold; color: #555; margin-bottom: 30px;">Challenge Starting</div>
+            <button class="chunky-btn green-btn huge" id="btn-start-match">START GAME</button>
+        </div>
+    </div>
+
     <div id="app-container">
         <header>
             <div class="title-area">
@@ -240,7 +249,7 @@
                 </div>
                 
                 <div class="game-panel">
-                    <div class="answer-box" id="ans-box-left">Connect dots to answer!</div>
+                    <div class="answer-box" id="ans-box-left">Waiting to start...</div>
                     <div class="clue-pic-holder" id="clue-holder-left"></div>
                 </div>
 
@@ -279,8 +288,7 @@
                         <div class="feedback-text feedback-success" id="feedback-text-left">WINNER!</div>
                         <p id="feedback-sub-left" style="margin-bottom:30px; color:#555; font-size: 24px; font-weight: bold;"></p>
                         <div style="display:flex; justify-content:center; gap:15px;">
-                            <button class="chunky-btn green-btn" id="btn-feedback-next-left">Next Challenge</button>
-                            <button class="chunky-btn gold-btn" id="btn-replay-left" style="display:none;">➡️ Next Matchup</button>
+                            <button class="chunky-btn green-btn" id="btn-feedback-next-left">Next Matchup</button>
                         </div>
                     </div>
                 </div>
@@ -299,7 +307,7 @@
                 </div>
                 
                 <div class="game-panel">
-                    <div class="answer-box" id="ans-box-right">Connect dots to answer!</div>
+                    <div class="answer-box" id="ans-box-right">Waiting to start...</div>
                     <div class="clue-pic-holder" id="clue-holder-right"></div>
                 </div>
 
@@ -338,8 +346,7 @@
                         <div class="feedback-text feedback-success" id="feedback-text-right">WINNER!</div>
                         <p id="feedback-sub-right" style="margin-bottom:30px; color:#555; font-size: 24px; font-weight: bold;"></p>
                         <div style="display:flex; justify-content:center; gap:15px;">
-                            <button class="chunky-btn green-btn" id="btn-feedback-next-right">Next Challenge</button>
-                            <button class="chunky-btn gold-btn" id="btn-replay-right" style="display:none;">➡️ Next Matchup</button>
+                            <button class="chunky-btn green-btn" id="btn-feedback-next-right">Next Matchup</button>
                         </div>
                     </div>
                 </div>
@@ -446,7 +453,11 @@
                 <div class="settings-block">
                     <h3>🏆 Tournament Setup</h3>
                     <div class="form-group">
-                        <label for="input-num-teams">Number of Teams in Match</label>
+                        <label for="input-questions-per-match">Questions per Match</label>
+                        <input type="number" id="input-questions-per-match" value="5" min="1" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="input-num-teams">Number of Teams</label>
                         <select id="input-num-teams">
                             <option value="1">1 Team (Solo Race)</option>
                             <option value="2" selected>2 Teams</option>
@@ -464,7 +475,7 @@
                     <div class="form-group">
                         <div class="toggle-switch">
                             <input type="checkbox" id="sync-toggle" checked>
-                            <label for="sync-toggle"><strong>Synchronize Target Pools</strong></label>
+                            <label for="sync-toggle"><strong>Sync Target Pools</strong></label>
                         </div>
                     </div>
                     <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
@@ -531,8 +542,12 @@
         let questionPool = JSON.parse(localStorage.getItem("jungle_game_pool")) || DEFAULT_QUESTIONS;
         let isTeamMode = false;
         let syncQuestions = true;
+        let questionsPerMatch = parseInt(localStorage.getItem("jungle_game_q_count")) || 5;
         let currentUploadedImageBase64 = ""; 
         let editingIndex = -1;
+
+        let availableQuestions = []; // Global pool tracker for slicing
+        let gameActive = false; // Gates input until START is pressed
 
         let customBGs = JSON.parse(localStorage.getItem("jungle_game_bgs")) || {};
         let currentTheme = localStorage.getItem("jungle_game_theme") || "1";
@@ -583,10 +598,15 @@
             loadRulesFromStorage();
             applyHomepageSettings();
             applyTheme(currentTheme);
-            rebuildGameSession();
             renderSettingsUI();
             setupPasteFeature();
-            window.addEventListener('resize', rebuildGameSession);
+            
+            window.addEventListener('resize', () => {
+                if(gameActive) {
+                    resizeCanvas('left'); requestRender('left');
+                    if(isTeamMode) { resizeCanvas('right'); requestRender('right'); }
+                }
+            });
         });
 
         function loadRulesFromStorage() {
@@ -596,6 +616,7 @@
             if(savedFont) { document.getElementById('font-selector').value = savedFont; document.body.style.fontFamily = savedFont; }
             if(githubBaseUrl) document.getElementById('input-github-url').value = githubBaseUrl;
             document.getElementById('theme-selector').value = currentTheme;
+            document.getElementById('input-questions-per-match').value = questionsPerMatch;
             
             document.getElementById('hp-font-size').value = hpData.fontSize;
             document.getElementById('hp-font-style').value = hpData.fontStyle;
@@ -610,20 +631,15 @@
             hpTitle.style.fontFamily = hpData.fontStyle;
             hpSubtitle.style.fontFamily = hpData.fontStyle;
             
-            if(hpData.bg) {
-                hpScreen.style.backgroundImage = `url('${hpData.bg}')`;
-            } else {
-                hpScreen.style.backgroundImage = document.getElementById('app-container').style.backgroundImage;
-            }
+            if(hpData.bg) { hpScreen.style.backgroundImage = `url('${hpData.bg}')`; } 
+            else { hpScreen.style.backgroundImage = document.getElementById('app-container').style.backgroundImage; }
         }
 
         function applyTheme(themeId) {
             currentTheme = themeId;
             const theme = THEME_DATA[themeId];
             
-            for(let key in theme.colors) {
-                document.documentElement.style.setProperty(key, theme.colors[key]);
-            }
+            for(let key in theme.colors) { document.documentElement.style.setProperty(key, theme.colors[key]); }
             
             let bgUrl = customBGs[themeId] || (githubBaseUrl ? `${githubBaseUrl}${theme.bg}` : 'background.gif');
             document.getElementById('app-container').style.backgroundImage = `url('${bgUrl}')`;
@@ -633,7 +649,11 @@
         }
 
         function savePoolToStorage() {
-            try { localStorage.setItem("jungle_game_pool", JSON.stringify(questionPool)); localStorage.setItem("jungle_game_sync", syncQuestions); } 
+            try { 
+                localStorage.setItem("jungle_game_pool", JSON.stringify(questionPool)); 
+                localStorage.setItem("jungle_game_sync", syncQuestions); 
+                localStorage.setItem("jungle_game_q_count", questionsPerMatch);
+            } 
             catch(e) { alert("Storage limit warning! Try using smaller pictures."); }
             renderSettingsUI();
         }
@@ -643,28 +663,61 @@
             applyHomepageSettings();
         }
 
-        function rebuildGameSession() {
-            if(questionPool.length === 0) questionPool = [...DEFAULT_QUESTIONS];
-            if (syncQuestions) {
-                state.left.pool = JSON.parse(JSON.stringify(questionPool));
-                state.right.pool = JSON.parse(JSON.stringify(questionPool));
-            } else {
-                state.left.pool = [...questionPool].sort(() => Math.random() - 0.5);
-                state.right.pool = [...questionPool].sort(() => Math.random() - 0.5);
+        /************************************************************************
+         * DYNAMIC SLICING & MATCH PREPARATION
+         ************************************************************************/
+        function getQuestionSlice(count) {
+            let slice = [];
+            let safeguard = 0;
+            if(questionPool.length === 0) return slice;
+            
+            while(slice.length < count && safeguard < 1000) {
+                if(availableQuestions.length === 0) {
+                    availableQuestions = [...questionPool].sort(() => Math.random() - 0.5);
+                }
+                slice.push(availableQuestions.pop());
+                safeguard++;
             }
-            state.left.index = 0; state.left.score = 0; state.right.index = 0; state.right.score = 0;
+            return slice;
+        }
+
+        function preparePools() {
+            if(questionPool.length === 0) questionPool = [...DEFAULT_QUESTIONS];
+            
+            if (syncQuestions) {
+                let slice = getQuestionSlice(questionsPerMatch);
+                state.left.pool = JSON.parse(JSON.stringify(slice));
+                state.right.pool = JSON.parse(JSON.stringify(slice));
+            } else {
+                state.left.pool = getQuestionSlice(questionsPerMatch);
+                state.right.pool = getQuestionSlice(questionsPerMatch);
+            }
+            state.left.index = 0; state.left.score = 0; 
+            state.right.index = 0; state.right.score = 0;
+            
             currentMatchFinished = false;
+            gameActive = false;
             
             stopConfettiAnimation('left'); stopConfettiAnimation('right');
             
+            // Wipe Canvas and Overlays Clean
             ['left', 'right'].forEach(side => {
+                document.getElementById(`canvas-container-${side}`).querySelectorAll('.dot-node').forEach(n => n.remove());
+                clearCurrentPaths(side);
+                document.getElementById(`clue-holder-${side}`).style.display = "none";
+                document.getElementById(`ans-box-${side}`).innerText = "Waiting to start...";
                 document.getElementById(`feedback-${side}`).classList.remove('active');
                 document.getElementById(`defeat-${side}`).classList.remove('active');
                 document.getElementById(`sorting-overlay-${side}`).classList.remove('active');
+                document.getElementById(`penalty-${side}`).classList.remove('active');
                 document.getElementById(`zone-${side}`).classList.remove('dimmed');
             });
-            
-            if(!isTournamentMode) applyLayoutUIModes();
+        }
+
+        function rebuildGameSession() {
+            availableQuestions = []; // Full reset of the running deck
+            preparePools();
+            applyLayoutUIModes();
         }
 
         function applyLayoutUIModes() {
@@ -685,8 +738,6 @@
                 titleText.innerText = "Connect & Sort";
                 document.getElementById('score-left').innerText = "Score: 0";
             }
-            setupChallengeRound('left');
-            if(isTeamMode) setupChallengeRound('right');
         }
 
         /************************************************************************
@@ -694,10 +745,17 @@
          ************************************************************************/
         function initTournament() {
             const numTeams = parseInt(document.getElementById('input-num-teams').value);
+            questionsPerMatch = parseInt(document.getElementById('input-questions-per-match').value) || 5;
+            savePoolToStorage();
+
             if(numTeams === 1) {
                 isTournamentMode = false; isTeamMode = false;
                 document.getElementById('settings-panel').style.display = 'none';
-                rebuildGameSession();
+                
+                availableQuestions = []; preparePools(); applyLayoutUIModes();
+                document.getElementById('ready-title').innerText = "Solo Challenge";
+                document.getElementById('ready-subtitle').innerText = `${questionsPerMatch} Questions`;
+                document.getElementById('ready-screen').classList.add('active');
                 return;
             }
 
@@ -708,6 +766,7 @@
             
             let shuffled = [...tournamentTeams].sort(() => Math.random() - 0.5);
             currentRoundQueue = []; nextRoundQueue = [];
+            availableQuestions = []; // Reset deck for tournament
 
             for (let i = 0; i < shuffled.length; i += 2) {
                 if (i + 1 < shuffled.length) { currentRoundQueue.push([shuffled[i], shuffled[i+1]]); } 
@@ -717,17 +776,13 @@
         }
 
         function loadNextMatchup() {
-            currentMatchFinished = false; 
-            ['left', 'right'].forEach(side => {
-                document.getElementById(`feedback-${side}`).classList.remove('active');
-                document.getElementById(`defeat-${side}`).classList.remove('active');
-                document.getElementById(`zone-${side}`).classList.remove('dimmed');
-            });
-
             if (currentRoundQueue.length === 0) {
                 if (nextRoundQueue.length === 1) {
                     alert(`🏆 ${nextRoundQueue[0].toUpperCase()} IS THE TOURNAMENT CHAMPION! 🏆`);
-                    isTournamentMode = false; isTeamMode = false; rebuildGameSession(); return;
+                    isTournamentMode = false; isTeamMode = false; 
+                    rebuildGameSession(); 
+                    document.getElementById('homepage-screen').classList.remove('hidden');
+                    return;
                 }
                 currentRoundQueue = [];
                 for (let i = 0; i < nextRoundQueue.length; i += 2) {
@@ -744,24 +799,22 @@
                 nextRoundQueue.push(currentMatch[0]); loadNextMatchup(); return;
             }
 
+            preparePools();
+            
             document.getElementById('mode-badge-left').innerText = currentMatch[0];
             document.getElementById('mode-badge-right').innerText = currentMatch[1];
-            
-            state.left.pool = syncQuestions ? JSON.parse(JSON.stringify(questionPool)) : [...questionPool].sort(() => Math.random() - 0.5);
-            state.right.pool = syncQuestions ? JSON.parse(JSON.stringify(questionPool)) : [...questionPool].sort(() => Math.random() - 0.5);
-            state.left.index = 0; state.right.index = 0;
-            
-            document.getElementById('score-left').innerText = "RACE!"; document.getElementById('score-right').innerText = "RACE!";
             document.getElementById('game-title-text').innerText = `🏆 TOURNAMENT: ${currentMatch[0]} vs ${currentMatch[1]}`;
             
-            setupChallengeRound('left'); setupChallengeRound('right');
+            document.getElementById('ready-title').innerText = `🏆 TOURNAMENT`;
+            document.getElementById('ready-subtitle').innerText = `${currentMatch[0]} vs ${currentMatch[1]}`;
+            document.getElementById('ready-screen').classList.add('active');
         }
 
         /************************************************************************
          * PENALTY & GAME PROGRESSION LOGIC
          ************************************************************************/
         function triggerPenalty(side, reasonText) {
-            if(currentMatchFinished) return;
+            if(currentMatchFinished || !gameActive) return;
             clearCurrentPaths(side);
             state[side].inPenalty = true;
             
@@ -776,6 +829,7 @@
             timerEl.innerText = timeLeft;
             
             const interval = setInterval(() => {
+                if(!gameActive) { clearInterval(interval); return; } // Break if home button pressed
                 timeLeft--;
                 if(timeLeft > 0) { timerEl.innerText = timeLeft; } 
                 else { clearInterval(interval); overlay.classList.remove('active'); state[side].inPenalty = false; }
@@ -790,7 +844,7 @@
             if(sideState.index >= sideState.pool.length) {
                 if(isTeamMode) {
                     if(currentMatchFinished) return; 
-                    currentMatchFinished = true; 
+                    currentMatchFinished = true; gameActive = false;
                     
                     const loserSide = side === 'left' ? 'right' : 'left';
                     const teamLabelName = document.getElementById(`mode-badge-${side}`).innerText;
@@ -804,10 +858,17 @@
                     if (isTournamentMode) {
                         nextRoundQueue.push(teamLabelName);
                         subEl.innerHTML = `<span style="color:var(--primary-dark);">${teamLabelName} ADVANCES!</span>`;
-                        replayBtn.style.display = "inline-block"; replayBtn.innerText = "➡️ Next Matchup"; replayBtn.onclick = () => loadNextMatchup();
+                        replayBtn.style.display = "inline-block"; replayBtn.innerText = "➡️ Next Matchup"; 
+                        replayBtn.onclick = () => loadNextMatchup();
                     } else {
                         subEl.innerHTML = `<span style="color:var(--primary-dark);">${teamLabelName} Wins!</span>`;
-                        replayBtn.style.display = "inline-block"; replayBtn.innerText = "🔄 Replay Race"; replayBtn.onclick = () => rebuildGameSession();
+                        replayBtn.style.display = "inline-block"; replayBtn.innerText = "🔄 Replay Race"; 
+                        replayBtn.onclick = () => {
+                            preparePools();
+                            document.getElementById('ready-title').innerText = "Team Race";
+                            document.getElementById('ready-subtitle').innerText = "Team A vs Team B";
+                            document.getElementById('ready-screen').classList.add('active');
+                        };
                     }
                     
                     document.getElementById(`btn-feedback-next-${side}`).style.display = "none";
@@ -817,13 +878,20 @@
                     document.getElementById(`defeat-${loserSide}`).classList.add('active');
 
                 } else {
+                    gameActive = false;
                     AudioFX.victory(); triggerConfettiExplosion(side);
                     document.getElementById(`feedback-text-${side}`).innerText = "🏆 Completed!";
-                    document.getElementById(`feedback-sub-${side}`).innerHTML = `Final Points: ${sideState.score}`;
+                    document.getElementById(`feedback-sub-${side}`).innerHTML = `Final Score: ${sideState.score}`;
                     document.getElementById(`btn-feedback-next-${side}`).style.display = "none";
                     
                     const replayBtn = document.getElementById(`btn-replay-${side}`);
-                    replayBtn.style.display = "inline-block"; replayBtn.innerText = "🔄 Replay Game"; replayBtn.onclick = () => rebuildGameSession();
+                    replayBtn.style.display = "inline-block"; replayBtn.innerText = "🔄 Replay Game"; 
+                    replayBtn.onclick = () => {
+                        preparePools();
+                        document.getElementById('ready-title').innerText = "Single Player";
+                        document.getElementById('ready-subtitle').innerText = "Connect & Sort Challenge";
+                        document.getElementById('ready-screen').classList.add('active');
+                    };
                     document.getElementById(`feedback-${side}`).classList.add('active');
                 }
             } else {
@@ -880,7 +948,7 @@
             const clueHolder = document.getElementById(`clue-holder-${side}`);
             clueHolder.innerHTML = ""; clueHolder.style.display = "none";
 
-            if(sideState.index >= sideState.pool.length || currentMatchFinished) return;
+            if(sideState.index >= sideState.pool.length || currentMatchFinished || !gameActive) return;
 
             const currentQuestion = sideState.pool[sideState.index];
             if (currentQuestion.image) {
@@ -906,59 +974,17 @@
             setTimeout(() => { resizeCanvas(side); requestRender(side); }, 50);
         }
 
-        function triggerConfettiExplosion(side) {
-            const canvas = document.getElementById(`confetti-${side}`);
-            if(!canvas) return;
-            const container = document.getElementById(`canvas-container-${side}`);
-            canvas.width = container.clientWidth; canvas.height = container.clientHeight;
-            const sideState = state[side];
-            sideState.confettiParticles = []; sideState.confettiActive = true;
-            const colors = ['#ffb703', '#fb8500', '#52b788', '#2d6a4f', '#2ecc71', '#e74c3c', '#9b59b6', '#3498db'];
-
-            for (let i = 0; i < 120; i++) {
-                sideState.confettiParticles.push({
-                    x: canvas.width / 2, y: canvas.height - 20, size: Math.random() * 8 + 6,
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    speedX: (Math.random() - 0.5) * 15, speedY: -(Math.random() * 12 + 10),
-                    gravity: 0.3, rotation: Math.random() * 360, rotationSpeed: (Math.random() - 0.5) * 10
-                });
-            }
-
-            function updateConfettiFrame() {
-                if (!sideState.confettiActive) return;
-                const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height);
-                let activeParticles = false;
-                sideState.confettiParticles.forEach(p => {
-                    p.x += p.speedX; p.y += p.speedY; p.speedY += p.gravity; p.rotation += p.rotationSpeed;
-                    if (p.y < canvas.height && p.x > 0 && p.x < canvas.width) {
-                        activeParticles = true;
-                        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation * Math.PI / 180);
-                        ctx.fillStyle = p.color; ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size); ctx.restore();
-                    }
-                });
-                if (activeParticles) requestAnimationFrame(updateConfettiFrame);
-                else ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-            requestAnimationFrame(updateConfettiFrame);
-        }
-
-        function stopConfettiAnimation(side) { state[side].confettiActive = false; const canvas = document.getElementById(`confetti-${side}`); if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height); }
-        
         function resizeCanvas(side) {
             const canvas = document.getElementById(`canvas-${side}`), container = document.getElementById(`canvas-container-${side}`);
-            if(canvas) { canvas.width = container.clientWidth; canvas.height = container.clientHeight; }
+            if(canvas && container) { canvas.width = container.clientWidth; canvas.height = container.clientHeight; }
             const confCanvas = document.getElementById(`confetti-${side}`);
-            if(confCanvas) { confCanvas.width = container.clientWidth; confCanvas.height = container.clientHeight; }
+            if(confCanvas && container) { confCanvas.width = container.clientWidth; confCanvas.height = container.clientHeight; }
         }
 
-        // Hardware-Accelerated Rendering Queue
         function requestRender(side) {
             if(!renderQueue[side]) {
                 renderQueue[side] = true;
-                requestAnimationFrame(() => {
-                    drawCanvasVisuals(side);
-                    renderQueue[side] = false;
-                });
+                requestAnimationFrame(() => { drawCanvasVisuals(side); renderQueue[side] = false; });
             }
         }
 
@@ -968,7 +994,7 @@
             const ctx = canvas.getContext('2d'), container = document.getElementById(`canvas-container-${side}`);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const sideState = state[side];
-            if(!sideState || sideState.currentChain.length === 0) return;
+            if(!sideState || sideState.currentChain.length === 0 || !gameActive) return;
 
             const highlightColor = THEME_DATA[currentTheme].colors["--primary-light"];
 
@@ -1002,9 +1028,9 @@
 
         function handleNodeSelectionStart(e, side, item, node) {
             e.stopPropagation(); const sideState = state[side];
-            if(sideState.inPenalty || currentMatchFinished) return;
+            if(!gameActive || sideState.inPenalty || currentMatchFinished) return;
             
-            // Re-click an already selected dot to clear the path
+            // Clear path if tapping an already selected node
             if(sideState.currentChain.includes(item.id)) {
                 clearCurrentPaths(side);
                 return;
@@ -1023,7 +1049,7 @@
 
         function handlePointerTrackingMove(e, side) {
             const sideState = state[side];
-            if(!sideState.activeDrawing || sideState.inPenalty) return;
+            if(!gameActive || !sideState.activeDrawing || sideState.inPenalty) return;
             
             updateTrackingCoordinates(e, side); requestRender(side);
             
@@ -1061,7 +1087,7 @@
 
         function evaluateCurrentSubmission(side) {
             const sideState = state[side];
-            if(sideState.inPenalty || currentMatchFinished) return;
+            if(!gameActive || sideState.inPenalty || currentMatchFinished) return;
             
             const currentQuestion = sideState.pool[sideState.index];
             if(!currentQuestion) return;
@@ -1143,13 +1169,31 @@
          * GLOBAL INPUT EVENT PIPELINE
          ************************************************************************/
         function initDOMEvents() {
-            // Homepage Navigation
+            // Home & Play Setup
             document.getElementById('btn-go-home').addEventListener('click', () => {
+                isTournamentMode = false; isTeamMode = false; gameActive = false;
                 document.getElementById('homepage-screen').classList.remove('hidden');
+                document.getElementById('ready-screen').classList.remove('active');
+                rebuildGameSession();
             });
+            
             document.getElementById('btn-start-app').addEventListener('click', () => {
                 document.getElementById('homepage-screen').classList.add('hidden');
+                questionsPerMatch = parseInt(document.getElementById('input-questions-per-match').value) || 5;
+                availableQuestions = []; preparePools(); applyLayoutUIModes();
+                
+                document.getElementById('ready-title').innerText = isTeamMode ? "Team Race" : "Single Player";
+                document.getElementById('ready-subtitle').innerText = isTeamMode ? "Team A vs Team B" : "Connect & Sort Challenge";
+                document.getElementById('ready-screen').classList.add('active');
             });
+            
+            document.getElementById('btn-start-match').addEventListener('click', () => {
+                document.getElementById('ready-screen').classList.remove('active');
+                gameActive = true;
+                setupChallengeRound('left');
+                if(isTeamMode) setupChallengeRound('right');
+            });
+            
             document.getElementById('btn-hp-settings').addEventListener('click', () => {
                 document.getElementById('settings-panel').style.display = 'block';
             });
@@ -1186,14 +1230,28 @@
                 document.getElementById(`btn-reset-${side}`).addEventListener('click', () => clearCurrentPaths(side));
             });
 
-            document.getElementById('btn-toggle-mode').addEventListener('click', () => { isTeamMode = !isTeamMode; isTournamentMode = false; rebuildGameSession(); });
+            document.getElementById('btn-toggle-mode').addEventListener('click', () => { 
+                isTeamMode = !isTeamMode; isTournamentMode = false; gameActive = false;
+                availableQuestions = []; preparePools(); applyLayoutUIModes(); 
+            });
+            
             document.getElementById('btn-start-tournament').addEventListener('click', initTournament);
 
             document.getElementById('btn-open-settings').addEventListener('click', () => document.getElementById('settings-panel').style.display = 'block');
             document.getElementById('btn-close-settings').addEventListener('click', () => {
-                syncQuestions = document.getElementById('sync-toggle').checked; savePoolToStorage();
+                syncQuestions = document.getElementById('sync-toggle').checked; 
+                questionsPerMatch = parseInt(document.getElementById('input-questions-per-match').value) || 5;
+                savePoolToStorage();
                 document.getElementById('settings-panel').style.display = 'none';
-                if(!isTournamentMode) rebuildGameSession();
+                
+                if(!isTournamentMode && !document.getElementById('homepage-screen').classList.contains('hidden')) {
+                    // Do nothing, just updated settings on homepage
+                } else if(!isTournamentMode) {
+                    availableQuestions = []; preparePools(); applyLayoutUIModes();
+                    document.getElementById('ready-title').innerText = isTeamMode ? "Team Race" : "Single Player";
+                    document.getElementById('ready-subtitle').innerText = "Settings Updated";
+                    document.getElementById('ready-screen').classList.add('active');
+                }
             });
 
             document.getElementById('btn-add-question').addEventListener('click', executeAppendQuestionAction);
