@@ -225,7 +225,7 @@
         <video id="hp-bg-vid" class="bg-layer" autoplay loop muted playsinline style="display:none;"></video>
         
         <div class="hp-content-box" style="background: transparent; box-shadow: none; border: none;">
-            <div style="display: flex; justify-content: center; gap: 15px;">
+            <div style="display: flex; justify-content: center; gap: 18px;">
                 <button class="chunky-btn green-btn huge" id="btn-start-app">PLAY</button>
                 <button class="chunky-btn gold-btn huge" id="btn-hp-settings">⚙️ SETTINGS</button>
             </div>
@@ -241,7 +241,7 @@
         <header>
             <div class="title-area">
                 <button class="chunky-btn gold-btn" id="btn-go-home" style="padding: 10px 15px; font-size: 16px;">🏠 Home</button>
-                <h1 id="game-title-text">Connect & Sort</h1>
+                <h1 id="game-title-text">Connect & Sort Activity</h1>
             </div>
             <div class="global-controls">
                 <button class="chunky-btn" id="btn-toggle-mode">👥 Switch to Team Mode</button>
@@ -255,10 +255,10 @@
             <div id="match-start-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index: 60; display:flex; flex-direction:column; align-items:center; justify-content:center; background: rgba(26, 58, 42, 0.85);">
                 <div class="hp-instructions" style="background:#fff; border: 6px solid var(--accent-gold); max-width:600px; padding: 30px; margin-bottom: 40px;">
                     <h2 style="text-align:center; color:var(--primary-dark); margin-bottom:20px; font-size: 32px; text-transform: uppercase;">How to Play</h2>
-                    <p style="margin-bottom: 12px;">1. 👈 <strong>Drag</strong> to connect the dots in order.</p>
-                    <p style="margin-bottom: 12px;">2. ✅ Click <strong>"Check Answer"</strong>.</p>
+                    <p style="margin-bottom: 12px;">1. 👈 <strong>Drag or Click</strong> to connect the dots in order.</p>
+                    <p style="margin-bottom: 12px;">2. ✅ Press<strong>"Check Answer"</strong>.</p>
                     <p style="margin-bottom: 12px;">3. ♻️ <strong>Sort</strong> the item into the correct bin.</p>
-                    <p style="color: #e74c3c; text-align: center; margin-top: 20px; background: rgba(231,76,60,0.1); padding: 12px; border-radius: 8px;">⚠️ Mistakes = 3 Second Penalty!</p>
+                    <p style="color: #e74c3c; text-align: center; margin-top: 20px; background: rgba(231,76,60,0.1); padding: 12px; border-radius: 8px;">⚠️ Mistakes = 2 Second Penalty!</p>
                     <p style="color: #2980b9; text-align: center; margin-top: 12px; font-size: 18px;">💡 Tap an already selected dot to clear the line connected after it.</p>
                 </div>
                 <button class="chunky-btn green-btn huge" id="btn-start-match">▶️ START MATCH</button>
@@ -284,7 +284,7 @@
                 <!-- Hidden until Start Match -->
                 <div id="controls-left" style="padding:20px; text-align:center; z-index:5; display: none; justify-content: center; gap: 15px;">
                     <button class="chunky-btn green-btn" id="btn-check-left" style="width: 200px;">Check Answer</button>
-                    <button class="chunky-btn" id="btn-reset-left" style="width: 200px;">Clear Paths</button>
+                    <button class="chunky-btn" id="btn-reset-left" style="width: 200px;">Clear All</button>
                 </div>
 
                 <!-- Left Overlays -->
@@ -302,7 +302,7 @@
                 <div class="feedback-overlay" id="penalty-left" style="z-index: 80;">
                     <div class="game-panel feedback-card">
                         <div class="feedback-text feedback-fail" id="penalty-reason-left">Time Penalty!</div>
-                        <div class="penalty-timer" id="penalty-timer-left">3</div>
+                        <div class="penalty-timer" id="penalty-timer-left">2</div>
                         <div style="font-size: 24px; color: #555; font-weight: bold;">Wait to try again...</div>
                     </div>
                 </div>
@@ -362,7 +362,7 @@
                 <div class="feedback-overlay" id="penalty-right" style="z-index: 80;">
                     <div class="game-panel feedback-card">
                         <div class="feedback-text feedback-fail" id="penalty-reason-right">Time Penalty!</div>
-                        <div class="penalty-timer" id="penalty-timer-right">3</div>
+                        <div class="penalty-timer" id="penalty-timer-right">2</div>
                         <div style="font-size: 24px; color: #555; font-weight: bold;">Wait to try again...</div>
                     </div>
                 </div>
@@ -391,21 +391,7 @@
                 <button class="chunky-btn green-btn" id="btn-close-settings">💾 Save and Close</button>
             </div>
 
-            <div class="settings-grid">
-                <!-- BLOCK 1: Homepage Customization -->
-                <div class="settings-block">
-                    <h3>🏠 Homepage Background</h3>
-                    <div class="form-group">
-                        <label>Background URL (Image/Video)</label>
-                        <input type="text" id="hp-bg-url" placeholder="http://... (leave blank to match game)">
-                    </div>
-                    <div class="form-group">
-                        <label>Or Upload Image locally</label>
-                        <input type="file" id="hp-bg-upload" accept="image/*" style="font-size:14px; padding: 6px;">
-                    </div>
-                </div>
-
-                <!-- BLOCK 2: Data Entry -->
+                 <!-- BLOCK 2: Data Entry -->
                 <div class="settings-block">
                     <h3>➕ Create or Edit Challenge Item</h3>
                     <div class="form-group">
