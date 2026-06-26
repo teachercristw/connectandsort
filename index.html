@@ -23,6 +23,10 @@
             font-family: 'Fredoka One', cursive, sans-serif;
             background-color: #1a3a2a; color: #333; overflow: hidden;
             width: 100vw; height: 100vh;
+            /* Prevents Smartscreen / Browser edge swipe actions, pull-to-refresh, and zoom */
+            touch-action: none;
+            overscroll-behavior: none; 
+            -webkit-touch-callout: none;
         }
 
         /* Video & Image Background Managers */
@@ -90,17 +94,17 @@
         .chunky-btn.huge { font-size: 28px; padding: 20px 40px; border-radius: 24px; box-shadow: 0 12px 0 var(--primary-dark), 0 20px 30px rgba(0,0,0,0.3);}
         .chunky-btn.huge:active { transform: translateY(12px); box-shadow: 0 0px 0 var(--primary-dark), 0 10px 15px rgba(0,0,0,0.3); }
         
-        /* 3D Glowing Homepage Buttons */
+        /* 3D Glowing Homepage Buttons (REDUCED SIZE) */
         .glowing-btn {
             animation: pulseGlow 2s infinite alternate;
             border: 4px solid rgba(255,255,255,0.5);
-            font-size: 36px !important; 
-            padding: 25px 60px !important; 
-            border-radius: 35px !important;
+            font-size: 24px !important; 
+            padding: 16px 40px !important; 
+            border-radius: 20px !important;
             letter-spacing: 2px;
         }
-        .glowing-btn.green-btn { box-shadow: 0 12px 0 var(--primary-dark), 0 25px 35px rgba(0,0,0,0.6), 0 0 25px var(--primary-light); }
-        .glowing-btn.gold-btn { box-shadow: 0 12px 0 #d4a373, 0 25px 35px rgba(0,0,0,0.6), 0 0 25px var(--accent-gold); }
+        .glowing-btn.green-btn { box-shadow: 0 10px 0 var(--primary-dark), 0 20px 30px rgba(0,0,0,0.6), 0 0 25px var(--primary-light); }
+        .glowing-btn.gold-btn { box-shadow: 0 10px 0 #d4a373, 0 20px 30px rgba(0,0,0,0.6), 0 0 25px var(--accent-gold); }
         
         @keyframes pulseGlow {
             0% { transform: scale(1); filter: brightness(1); }
@@ -108,7 +112,7 @@
         }
         
         .glowing-btn:active {
-            transform: scale(0.95) translateY(12px) !important;
+            transform: scale(0.95) translateY(10px) !important;
             animation: none;
         }
         .glowing-btn.green-btn:active { box-shadow: 0 0px 0 var(--primary-dark), 0 10px 15px rgba(0,0,0,0.3), 0 0 10px var(--primary-light) !important; }
@@ -198,9 +202,19 @@
         .feedback-success { color: #2ecc71; text-shadow: 2px 2px 0px #27ae60; }
         .feedback-fail { color: #e74c3c; text-shadow: 2px 2px 0px #c0392b; }
 
+        /* Prevents layout from collapsing when draggable word is picked up */
+        .word-placeholder {
+            min-height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0;
+            width: 100%;
+        }
+
         .draggable-word {
             font-size: 40px; padding: 15px 35px; background: #fff; color: var(--primary-dark);
-            border-radius: 20px; display: inline-block; cursor: grab; margin: 20px;
+            border-radius: 20px; display: inline-block; cursor: grab; margin: 0;
             border: 6px solid var(--primary-light); box-shadow: 0 10px 0 var(--primary-dark), 0 15px 25px rgba(0,0,0,0.3);
             touch-action: none; position: relative; z-index: 100; font-weight: 800;
         }
@@ -249,19 +263,23 @@
 </head>
 <body>
 
+    <!-- HOMEPAGE OVERLAY -->
     <div id="homepage-screen">
+        <!-- Media BG Layer -->
         <img id="hp-bg-img" class="bg-layer" src="">
         <video id="hp-bg-vid" class="bg-layer" autoplay loop muted playsinline style="display:none;"></video>
         
         <div class="hp-content-box">
             <div style="display: flex; justify-content: center; gap: 20px;">
-                <button class="chunky-btn green-btn huge glowing-btn" id="btn-start-app">▶️PLAY</button>
-                <button class="chunky-btn gold-btn huge glowing-btn" id="btn-hp-settings">⚙️SETTINGS</button>
+                <button class="chunky-btn green-btn huge glowing-btn" id="btn-start-app">▶️ PLAY</button>
+                <button class="chunky-btn gold-btn huge glowing-btn" id="btn-hp-settings">⚙️ SETTINGS</button>
             </div>
         </div>
     </div>
 
+    <!-- MAIN GAME CONTAINER -->
     <div id="app-container">
+        <!-- Game Media BG Layer -->
         <img id="app-bg-img" class="bg-layer" src="">
         <video id="app-bg-vid" class="bg-layer" autoplay loop muted playsinline style="display:none;"></video>
 
@@ -278,18 +296,20 @@
 
         <main id="game-stage">
             
+            <!-- CENTRAL START/INSTRUCTION OVERLAY -->
             <div id="match-start-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index: 60; display:flex; flex-direction:column; align-items:center; justify-content:center; background: rgba(26, 58, 42, 0.85);">
                 <div class="hp-instructions" style="background:#fff; border: 6px solid var(--accent-gold); max-width:600px; padding: 30px; margin-bottom: 40px;">
                     <h2 style="text-align:center; color:var(--primary-dark); margin-bottom:20px; font-size: 32px; text-transform: uppercase;">How to Play</h2>
-                    <p style="margin-bottom: 12px;">1. 👈 <strong>Drag or Click</strong> to connect the letters or words in order.</p>
+                    <p style="margin-bottom: 12px;">1. 👈 <strong>Drag</strong> to connect the dots in order.</p>
                     <p style="margin-bottom: 12px;">2. ✅ Click <strong>"Check Answer"</strong>.</p>
                     <p style="margin-bottom: 12px;">3. ♻️ <strong>Sort</strong> the item into the correct bin.</p>
                     <p style="color: #e74c3c; text-align: center; margin-top: 20px; background: rgba(231,76,60,0.1); padding: 12px; border-radius: 8px;">⚠️ Mistakes = 2 Second Penalty!</p>
                     <p style="color: #2980b9; text-align: center; margin-top: 12px; font-size: 18px;">💡 Tap an already selected dot to clear the line connected after it.</p>
                 </div>
-                <button class="chunky-btn green-btn huge" id="btn-start-match">▶️START MATCH</button>
+                <button class="chunky-btn green-btn huge" id="btn-start-match">▶️ START MATCH</button>
             </div>
 
+            <!-- LEFT TEAM ZONE -->
             <div class="game-zone" id="zone-left">
                 <div class="hud-row">
                     <div class="score-badge" id="score-left">Score: 0 / 0</div>
@@ -306,15 +326,20 @@
                     <canvas class="confetti-canvas" id="confetti-left"></canvas>
                 </div>
 
+                <!-- Hidden until Start Match -->
                 <div id="controls-left" style="padding:20px; text-align:center; z-index:5; display: none; justify-content: center; gap: 15px;">
                     <button class="chunky-btn green-btn" id="btn-check-left" style="white-space: nowrap; padding: 14px 30px;">Check Answer</button>
                     <button class="chunky-btn" id="btn-reset-left" style="white-space: nowrap; padding: 14px 30px;">Clear Paths</button>
                 </div>
 
+                <!-- Left Overlays -->
                 <div class="feedback-overlay" id="sorting-overlay-left" style="z-index: 70;">
                     <div class="game-panel feedback-card" style="max-width: 650px !important;">
                         <div class="feedback-text" style="color: var(--primary-dark);">Sort It!</div>
-                        <div id="draggable-word-left" class="draggable-word" draggable="true" data-side="left">WORD</div>
+                        <!-- Placeholder wrapper to prevent height collapse on absolute drag -->
+                        <div class="word-placeholder">
+                            <div id="draggable-word-left" class="draggable-word" draggable="true" data-side="left">WORD</div>
+                        </div>
                         <div style="display: flex; justify-content: space-around; margin-top: 20px; gap: 15px;">
                             <div class="drop-zone zone-trash" data-side="left" data-type="trash">🗑️ Trash</div>
                             <div class="drop-zone zone-recycle" data-side="left" data-type="recycle">♻️ Recycle</div>
@@ -347,6 +372,7 @@
                 </div>
             </div>
 
+            <!-- RIGHT TEAM ZONE -->
             <div class="game-zone" id="zone-right">
                 <div class="hud-row">
                     <div class="score-badge" id="score-right">Score: 0 / 0</div>
@@ -363,18 +389,23 @@
                     <canvas class="confetti-canvas" id="confetti-right"></canvas>
                 </div>
 
+                <!-- Hidden until Start Match -->
                 <div id="controls-right" style="padding:20px; text-align:center; z-index:5; display: none; justify-content: center; gap: 15px;">
                     <button class="chunky-btn green-btn" id="btn-check-right" style="white-space: nowrap; padding: 14px 30px;">Check Answer</button>
                     <button class="chunky-btn" id="btn-reset-right" style="white-space: nowrap; padding: 14px 30px;">Clear Paths</button>
                 </div>
 
+                <!-- Right Overlays -->
                 <div class="feedback-overlay" id="sorting-overlay-right" style="z-index: 70;">
                     <div class="game-panel feedback-card" style="max-width: 650px !important;">
                         <div class="feedback-text" style="color: var(--primary-dark);">Sort It!</div>
-                        <div id="draggable-word-right" class="draggable-word" draggable="true" data-side="right">WORD</div>
+                        <!-- Placeholder wrapper to prevent height collapse on absolute drag -->
+                        <div class="word-placeholder">
+                            <div id="draggable-word-right" class="draggable-word" draggable="true" data-side="right">WORD</div>
+                        </div>
                         <div style="display: flex; justify-content: space-around; margin-top: 20px; gap: 15px;">
-                            <div class="drop-zone zone-trash" data-side="right" data-type="trash">🗑️Trash</div>
-                            <div class="drop-zone zone-recycle" data-side="right" data-type="recycle">♻️Recycle</div>
+                            <div class="drop-zone zone-trash" data-side="right" data-type="trash">🗑️ Trash</div>
+                            <div class="drop-zone zone-recycle" data-side="right" data-type="recycle">♻️ Recycle</div>
                         </div>
                     </div>
                 </div>
@@ -407,13 +438,14 @@
 
         <section id="settings-panel">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                <h2 style="color: var(--accent-gold); font-size: 32px; text-shadow: 2px 2px 0 #000;">⚙️Admin Console</h2>
-                <button class="chunky-btn green-btn" id="btn-close-settings">💾Save and Close</button>
+                <h2 style="color: var(--accent-gold); font-size: 32px; text-shadow: 2px 2px 0 #000;">⚙️ Admin Console</h2>
+                <button class="chunky-btn green-btn" id="btn-close-settings">💾 Save and Close</button>
             </div>
 
             <div class="settings-grid">
+                <!-- BLOCK 1: Settings Restructure (Backgrounds & Fonts) -->
                 <div class="settings-block">
-                    <h3>🖼️Background & Fonts</h3>
+                    <h3>🖼️ Background & Fonts</h3>
                     <div class="form-group">
                         <label>Game Background URL (Image/Video)</label>
                         <input type="text" id="hp-bg-url" placeholder="http://... (Defaults to connect.mp4)">
@@ -435,6 +467,7 @@
                     </div>
                 </div>
 
+                <!-- BLOCK 2: Data Entry -->
                 <div class="settings-block">
                     <h3>➕ Create or Edit Challenge Item</h3>
                     <div class="form-group">
@@ -447,8 +480,8 @@
                     <div class="form-group">
                         <label for="input-category">Sorting Category</label>
                         <select id="input-category">
-                            <option value="trash">🗑️Trash</option>
-                            <option value="recycle">♻️Recycle</option>
+                            <option value="trash">🗑️ Trash</option>
+                            <option value="recycle">♻️ Recycle</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -461,11 +494,12 @@
                             Click here & paste your photo (Ctrl+V)
                         </div>
                     </div>
-                    <button class="chunky-btn green-btn btn-sm" id="btn-add-question" style="width: 100%;">➕Append to Pool</button>
+                    <button class="chunky-btn green-btn btn-sm" id="btn-add-question" style="width: 100%;">➕ Append to Pool</button>
                 </div>
 
+                <!-- BLOCK 3: Tournament & Cloud Data -->
                 <div class="settings-block">
-                    <h3>🏆Tournament Setup</h3>
+                    <h3>🏆 Tournament Setup</h3>
                     <div class="form-group">
                         <label for="input-questions-per-match">Questions per Match</label>
                         <input type="number" id="input-questions-per-match" value="5" min="1" max="50">
@@ -485,7 +519,7 @@
                             <option value="10">10 Teams</option>
                         </select>
                     </div>
-                    <button class="chunky-btn gold-btn btn-sm" id="btn-start-tournament" style="width:100%; margin-bottom: 15px;">🔥Start Tournament</button>
+                    <button class="chunky-btn gold-btn btn-sm" id="btn-start-tournament" style="width:100%; margin-bottom: 15px;">🔥 Start Tournament</button>
                     <div class="form-group">
                         <div class="toggle-switch">
                             <input type="checkbox" id="sync-toggle" checked>
@@ -494,20 +528,22 @@
                     </div>
                 </div>
 
+                <!-- BLOCK 4: Github Cloud Data -->
                 <div class="settings-block">
-                    <h3>☁️GitHub Cloud & Local Data</h3>
+                    <h3>☁️ GitHub Cloud & Local Data</h3>
                     <div class="form-group">
                         <input type="text" id="input-github-url" placeholder="https://raw.githubusercontent.com/user/repo/main/">
                     </div>
                     <button class="chunky-btn btn-sm" id="btn-github-sync" style="background:#3498db; width:100%; margin-bottom:15px;">🔄 Fetch GitHub Data</button>
                     <div style="display:flex; gap:10px;">
-                        <button class="chunky-btn btn-sm" id="btn-export-data">📤Export .json</button>
-                        <button class="chunky-btn btn-sm" id="btn-import-trigger">📥Load .json</button>
+                        <button class="chunky-btn btn-sm" id="btn-export-data">📤 Export .json</button>
+                        <button class="chunky-btn btn-sm" id="btn-import-trigger">📥 Load .json</button>
                         <input type="file" id="file-import-input" accept=".json" style="display: none;">
                     </div>
-                    <button class="chunky-btn btn-sm" id="btn-clear-system" style="background:#e74c3c; margin-top:15px; width:100%;">⚠️Factory Reset</button>
+                    <button class="chunky-btn btn-sm" id="btn-clear-system" style="background:#e74c3c; margin-top:15px; width:100%;">⚠️ Factory Reset</button>
                 </div>
 
+                <!-- BLOCK 5: Question Table -->
                 <div class="settings-block" style="grid-column: span 2;">
                     <h3>Current Challenge Item Pool (<span id="pool-count-label">0</span> Questions loaded)</h3>
                     <div style="max-height: 350px; overflow-y: auto; margin-top:10px; padding-right: 10px;">
@@ -531,18 +567,24 @@
 
     </div>
 
+    <!-- Tournament Results Modal -->
     <div id="tournament-results-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; display:none; align-items:center; justify-content:center;"></div>
 
     <audio id="victory-audio"><source src="winner sound effect.mp3" type="audio/mpeg"></audio>
 
     <script>
+        // Disable global right click context menu to prevent smartscreen popups on long press
+        window.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
         /************************************************************************
          * STATE INITIALIZATION & CONSTANTS
          ************************************************************************/
         const DEFAULT_QUESTIONS = [
-            { id: 1, type: "spelling", category: "recycle", tokens: ["p", "a", "p", "e", "r"], answer: "paper", image: "" },
-            { id: 2, type: "sentence", category: "recycle", tokens: ["glass", "bottle"], answer: "glass bottle", image: "" },
-            { id: 3, type: "sentence", category: "trash", tokens: ["banana", "peel"], answer: "banana peel", image: "" },
+            { id: 1, type: "spelling", category: "recycle", tokens: ["P", "a", "p", "e", "r"], answer: "Paper", image: "" },
+            { id: 2, type: "sentence", category: "recycle", tokens: ["Glass", "bottle"], answer: "Glass bottle", image: "" },
+            { id: 3, type: "sentence", category: "trash", tokens: ["Banana", "peel"], answer: "Banana peel", image: "" },
             { id: 4, type: "spelling", category: "trash", tokens: ["S", "a", "n", "x", "i", "n", "g"], answer: "Sanxing", image: "" }
         ];
 
@@ -558,7 +600,7 @@
         ];
 
         let questionPool = JSON.parse(localStorage.getItem("jungle_game_pool")) || DEFAULT_QUESTIONS;
-        let isTeamMode = true; // CHANGED: Default is Team Mode
+        let isTeamMode = true; // DEFAULT is Team Mode
         let syncQuestions = true;
         let questionsPerMatch = parseInt(localStorage.getItem("jungle_game_q_count")) || 5;
         let currentUploadedImageBase64 = ""; 
@@ -1067,7 +1109,8 @@
                 node.style.setProperty('--base-text', colorScheme.text);
 
                 node.addEventListener('mousedown', (e) => handleNodeSelectionStart(e, side, item, node));
-                node.addEventListener('touchstart', (e) => handleNodeSelectionStart(e, side, item, node), {passive: true});
+                // Add {passive: false} so we can call e.preventDefault()
+                node.addEventListener('touchstart', (e) => handleNodeSelectionStart(e, side, item, node), {passive: false});
                 container.appendChild(node);
             });
 
@@ -1127,7 +1170,11 @@
         }
 
         function handleNodeSelectionStart(e, side, item, node) {
-            e.stopPropagation(); const sideState = state[side];
+            // Prevent default touch behaviors (like waiting to see if it's a scroll or long-press)
+            if(e.cancelable) e.preventDefault();
+            e.stopPropagation(); 
+            
+            const sideState = state[side];
             if(!gameActive || sideState.inPenalty || currentMatchFinished) return;
             
             // Smart Unselect Logic 
@@ -1165,6 +1212,9 @@
         function handlePointerTrackingMove(e, side) {
             const sideState = state[side];
             if(!gameActive || !sideState.activeDrawing || sideState.inPenalty) return;
+            
+            // Prevent scrolling while actively drawing
+            if(e.type === 'touchmove' && e.cancelable) e.preventDefault();
             
             updateTrackingCoordinates(e, side); requestRender(side);
             
@@ -1212,7 +1262,7 @@
             // Generate the string currently selected by the user
             let userSubmission = sideState.currentChain.map(id => currentQuestion.tokens[id]).join(separator);
             
-            // CHANGED: Added .toLowerCase() to eliminate case sensitivity during evaluation
+            // ELIMINATE case sensitivity during evaluation
             const sanitizedUser = userSubmission.trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase();
             const sanitizedTarget = currentQuestion.answer.trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase();
 
@@ -1379,7 +1429,8 @@
             ['left', 'right'].forEach(side => {
                 const container = document.getElementById(`canvas-container-${side}`);
                 container.addEventListener('mousemove', (e) => handlePointerTrackingMove(e, side));
-                container.addEventListener('touchmove', (e) => handlePointerTrackingMove(e, side), {passive: true});
+                // Bind touch move with passive: false to suppress native scrolling
+                container.addEventListener('touchmove', (e) => handlePointerTrackingMove(e, side), {passive: false});
                 window.addEventListener('mouseup', () => terminatePointerTracking(side));
                 window.addEventListener('touchend', () => terminatePointerTracking(side));
 
