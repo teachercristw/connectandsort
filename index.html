@@ -466,7 +466,7 @@
                     </div>
                 </div>
 
-                <!-- NEW BLOCK: Rules & Categories -->
+                <!-- BLOCK: Rules & Categories -->
                 <div class="settings-block">
                     <h3>🗂️ Rules & Sorting Bins</h3>
                     <div class="form-group">
@@ -628,6 +628,9 @@
         let gameCategories = JSON.parse(localStorage.getItem("jungle_game_categories")) || ["Trash", "Recycle"];
         let penaltySeconds = parseInt(localStorage.getItem("jungle_game_penalty")) || 3;
         
+        // Tracking if the user has already seen the instructions this session
+        let hasSeenInstructions = false;
+
         // Backwards compatibility for old saved JSONs that used lowercase categories
         questionPool.forEach(q => {
             if (q.category === "trash") q.category = "Trash";
@@ -645,11 +648,6 @@
 
         let githubBaseUrl = localStorage.getItem("jungle_game_github") || "";
         let hpData = JSON.parse(localStorage.getItem("jungle_game_hp")) || { bg: "" };
-
-        // Cleanup obsolete storage from old versions
-        localStorage.removeItem("jungle_game_bgs");
-        localStorage.removeItem("jungle_game_theme");
-        localStorage.removeItem("jungle_game_ext");
 
         // Tournament Variables
         let tournamentTeams = [];
@@ -808,11 +806,14 @@
             renderDropZones('left');
             renderDropZones('right');
 
-            document.getElementById('match-start-overlay').style.display = 'flex';
-            document.getElementById('app-container').classList.remove('game-on');
-            document.getElementById('controls-left').style.display = 'none';
-            document.getElementById('controls-right').style.display = 'none';
-            
+            // Only show the instruction overlay if they haven't seen it yet
+            if (!hasSeenInstructions) {
+                document.getElementById('match-start-overlay').style.display = 'flex';
+                document.getElementById('app-container').classList.remove('game-on');
+                document.getElementById('controls-left').style.display = 'none';
+                document.getElementById('controls-right').style.display = 'none';
+            }
+
             stopConfettiAnimation('left'); stopConfettiAnimation('right');
             
             ['left', 'right'].forEach(side => {
@@ -832,6 +833,18 @@
             });
         }
 
+        function triggerGameStart() {
+            document.getElementById('match-start-overlay').style.display = 'none';
+            document.getElementById('app-container').classList.add('game-on'); 
+            
+            document.getElementById('controls-left').style.display = 'flex';
+            if(isTeamMode) document.getElementById('controls-right').style.display = 'flex';
+
+            gameActive = true;
+            setupChallengeRound('left');
+            if(isTeamMode) setupChallengeRound('right');
+        }
+
         function applyLayoutUIModes() {
             const zoneRight = document.getElementById('zone-right');
             const modeBadgeLeft = document.getElementById('mode-badge-left');
@@ -843,7 +856,7 @@
                 zoneRight.style.display = 'flex';
                 modeBadgeLeft.innerText = isTournamentMode ? modeBadgeLeft.innerText : "Team 1";
                 modeBadgeRight.innerText = isTournamentMode ? modeBadgeRight.innerText : "Team 2";
-                titleText.innerText = isTournamentMode ? titleText.innerText : "Connect and Sort Activity";
+                titleText.innerText = isTournamentMode ? titleText.innerText : "Connect Race";
                 document.getElementById('score-left').innerText = "RACE!";
                 document.getElementById('score-right').innerText = "RACE!";
                 toggleBtn.innerText = "👤 Switch to Solo";
@@ -871,6 +884,7 @@
             if(numTeams === 1) {
                 isTournamentMode = false; isTeamMode = false;
                 availableQuestions = []; preparePools(); applyLayoutUIModes();
+                if (hasSeenInstructions) triggerGameStart();
                 return;
             }
 
@@ -929,6 +943,11 @@
             document.getElementById('mode-badge-left').innerText = currentMatch[0];
             document.getElementById('mode-badge-right').innerText = currentMatch[1];
             document.getElementById('game-title-text').innerText = `🏆 TOURNAMENT: ${currentMatch[0]} vs ${currentMatch[1]}`;
+
+            // Auto start if instructions were already seen
+            if (hasSeenInstructions) {
+                triggerGameStart();
+            }
         }
 
         function showTournamentRankings() {
@@ -1022,7 +1041,7 @@
                     } else {
                         subEl.innerHTML = `<span style="color:var(--primary-dark);">${teamLabelName} Wins!</span>`;
                         replayBtn.style.display = "inline-block"; replayBtn.innerText = "🔄 Replay Race"; 
-                        replayBtn.onclick = () => { preparePools(); applyLayoutUIModes(); };
+                        replayBtn.onclick = () => { preparePools(); applyLayoutUIModes(); if(hasSeenInstructions) triggerGameStart(); };
                     }
                     
                     document.getElementById(`btn-feedback-next-${side}`).style.display = "none";
@@ -1040,7 +1059,7 @@
                     
                     const replayBtn = document.getElementById(`btn-replay-${side}`);
                     replayBtn.style.display = "inline-block"; replayBtn.innerText = "🔄 Replay Game"; 
-                    replayBtn.onclick = () => { preparePools(); applyLayoutUIModes(); };
+                    replayBtn.onclick = () => { preparePools(); applyLayoutUIModes(); if(hasSeenInstructions) triggerGameStart(); };
                     document.getElementById(`feedback-${side}`).classList.add('active');
                 }
             } else {
@@ -1452,6 +1471,7 @@
          ************************************************************************/
         function goHome() {
             isTournamentMode = false; isTeamMode = true; gameActive = false;
+            hasSeenInstructions = false; // Reset so they see instructions on the next fresh class
             document.getElementById('homepage-screen').classList.remove('hidden');
             document.getElementById('btn-toggle-mode').innerText = "👤 Switch to Solo";
             document.getElementById('match-start-overlay').style.display = 'flex';
@@ -1468,19 +1488,13 @@
                 penaltySeconds = parseInt(document.getElementById('input-penalty-secs').value) || 3;
                 syncQuestions = document.getElementById('sync-toggle').checked;
                 availableQuestions = []; preparePools(); applyLayoutUIModes();
+                if(hasSeenInstructions) triggerGameStart();
             });
             
             // Central Game Start Button
             document.getElementById('btn-start-match').addEventListener('click', () => {
-                document.getElementById('match-start-overlay').style.display = 'none';
-                document.getElementById('app-container').classList.add('game-on'); 
-                
-                document.getElementById('controls-left').style.display = 'flex';
-                if(isTeamMode) document.getElementById('controls-right').style.display = 'flex';
-
-                gameActive = true;
-                setupChallengeRound('left');
-                if(isTeamMode) setupChallengeRound('right');
+                hasSeenInstructions = true;
+                triggerGameStart();
             });
             
             document.getElementById('btn-hp-settings').addEventListener('click', () => { document.getElementById('settings-panel').style.display = 'block'; });
@@ -1517,6 +1531,7 @@
                 isTeamMode = !isTeamMode; isTournamentMode = false; gameActive = false;
                 document.getElementById('btn-toggle-mode').innerText = isTeamMode ? "👤 Switch to Solo" : "👥 Switch to Team Mode";
                 availableQuestions = []; preparePools(); applyLayoutUIModes(); 
+                if(hasSeenInstructions) triggerGameStart();
             });
             
             document.getElementById('btn-start-tournament').addEventListener('click', initTournament);
@@ -1531,6 +1546,7 @@
                 
                 if(!isTournamentMode && document.getElementById('homepage-screen').classList.contains('hidden')) {
                     availableQuestions = []; preparePools(); applyLayoutUIModes();
+                    if(hasSeenInstructions) triggerGameStart();
                 }
             });
 
