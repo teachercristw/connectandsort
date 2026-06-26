@@ -94,7 +94,7 @@
         .chunky-btn.huge { font-size: 28px; padding: 20px 40px; border-radius: 24px; box-shadow: 0 12px 0 var(--primary-dark), 0 20px 30px rgba(0,0,0,0.3);}
         .chunky-btn.huge:active { transform: translateY(12px); box-shadow: 0 0px 0 var(--primary-dark), 0 10px 15px rgba(0,0,0,0.3); }
         
-        /* 3D Glowing Homepage Buttons (REDUCED SIZE) */
+        /* 3D Glowing Homepage Buttons */
         .glowing-btn {
             animation: pulseGlow 2s infinite alternate;
             border: 4px solid rgba(255,255,255,0.5);
@@ -196,7 +196,7 @@
             opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
         }
         .feedback-overlay.active { opacity: 1; pointer-events: auto; }
-        .feedback-card { transform: scale(0.7); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 550px !important; width: 90%; background: #fff;}
+        .feedback-card { transform: scale(0.7); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 650px !important; width: 90%; background: #fff;}
         .feedback-overlay.active .feedback-card { transform: scale(1); }
         .feedback-text { font-size: 48px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
         .feedback-success { color: #2ecc71; text-shadow: 2px 2px 0px #27ae60; }
@@ -220,13 +220,13 @@
         }
         .draggable-word:active { cursor: grabbing; box-shadow: 0 0px 0 var(--primary-dark), 0 5px 10px rgba(0,0,0,0.3); transform: translateY(10px);}
         
+        /* Dynamic Drop Zone Stylings */
         .drop-zone {
-            width: 180px; height: 180px; border-radius: 24px; 
-            display: flex; align-items: center; justify-content: center; font-size: 32px; transition: all 0.2s ease;
+            flex: 1; min-width: 120px; max-width: 180px; min-height: 140px; border-radius: 24px; 
+            display: flex; align-items: center; justify-content: center; font-size: 26px; transition: all 0.2s ease;
             box-shadow: inset 0 10px 20px rgba(0,0,0,0.1); border-width: 6px; border-style: dashed; font-weight: 800;
+            padding: 10px; text-align: center; word-break: break-word; line-height: 1.2;
         }
-        .zone-trash { background: rgba(231, 76, 60, 0.1); border-color: #e74c3c; color: #c0392b;}
-        .zone-recycle { background: rgba(46, 204, 113, 0.1); border-color: #2ecc71; color: #27ae60;}
 
         .penalty-timer { font-size: 90px; font-weight: bold; color: #ff7675; margin: 20px 0; animation: pulseDot 1s infinite;}
 
@@ -303,7 +303,7 @@
                     <p style="margin-bottom: 12px;">1. 👈 <strong>Drag</strong> to connect the dots in order.</p>
                     <p style="margin-bottom: 12px;">2. ✅ Click <strong>"Check Answer"</strong>.</p>
                     <p style="margin-bottom: 12px;">3. ♻️ <strong>Sort</strong> the item into the correct bin.</p>
-                    <p style="color: #e74c3c; text-align: center; margin-top: 20px; background: rgba(231,76,60,0.1); padding: 12px; border-radius: 8px;">⚠️ Mistakes = 2 Second Penalty!</p>
+                    <p style="color: #e74c3c; text-align: center; margin-top: 20px; background: rgba(231,76,60,0.1); padding: 12px; border-radius: 8px;">⚠️ Mistakes result in a Time Penalty!</p>
                     <p style="color: #2980b9; text-align: center; margin-top: 12px; font-size: 18px;">💡 Tap an already selected dot to clear the line connected after it.</p>
                 </div>
                 <button class="chunky-btn green-btn huge" id="btn-start-match">▶️ START MATCH</button>
@@ -340,9 +340,8 @@
                         <div class="word-placeholder">
                             <div id="draggable-word-left" class="draggable-word" draggable="true" data-side="left">WORD</div>
                         </div>
-                        <div style="display: flex; justify-content: space-around; margin-top: 20px; gap: 15px;">
-                            <div class="drop-zone zone-trash" data-side="left" data-type="trash">🗑️ Trash</div>
-                            <div class="drop-zone zone-recycle" data-side="left" data-type="recycle">♻️ Recycle</div>
+                        <div id="drop-zones-left" style="display: flex; justify-content: space-around; flex-wrap: wrap; margin-top: 20px; gap: 15px; width: 100%;">
+                            <!-- Dynamically Generated Bins Here -->
                         </div>
                     </div>
                 </div>
@@ -350,7 +349,7 @@
                 <div class="feedback-overlay" id="penalty-left" style="z-index: 80;">
                     <div class="game-panel feedback-card">
                         <div class="feedback-text feedback-fail" id="penalty-reason-left">Time Penalty!</div>
-                        <div class="penalty-timer" id="penalty-timer-left">2</div>
+                        <div class="penalty-timer" id="penalty-timer-left">3</div>
                         <div style="font-size: 24px; color: #555; font-weight: bold;">Wait to try again...</div>
                     </div>
                 </div>
@@ -403,9 +402,8 @@
                         <div class="word-placeholder">
                             <div id="draggable-word-right" class="draggable-word" draggable="true" data-side="right">WORD</div>
                         </div>
-                        <div style="display: flex; justify-content: space-around; margin-top: 20px; gap: 15px;">
-                            <div class="drop-zone zone-trash" data-side="right" data-type="trash">🗑️ Trash</div>
-                            <div class="drop-zone zone-recycle" data-side="right" data-type="recycle">♻️ Recycle</div>
+                        <div id="drop-zones-right" style="display: flex; justify-content: space-around; flex-wrap: wrap; margin-top: 20px; gap: 15px; width: 100%;">
+                            <!-- Dynamically Generated Bins Here -->
                         </div>
                     </div>
                 </div>
@@ -443,6 +441,7 @@
             </div>
 
             <div class="settings-grid">
+                
                 <!-- BLOCK 1: Settings Restructure (Backgrounds & Fonts) -->
                 <div class="settings-block">
                     <h3>🖼️ Background & Fonts</h3>
@@ -467,6 +466,23 @@
                     </div>
                 </div>
 
+                <!-- NEW BLOCK: Rules & Categories -->
+                <div class="settings-block">
+                    <h3>🗂️ Rules & Sorting Bins</h3>
+                    <div class="form-group">
+                        <label for="input-penalty-secs">Penalty Duration (Seconds)</label>
+                        <input type="number" id="input-penalty-secs" value="3" min="1" max="10">
+                    </div>
+                    <div class="form-group">
+                        <label>Manage Sorting Bins</label>
+                        <div style="display:flex; gap:10px; margin-bottom: 10px;">
+                            <input type="text" id="new-category-name" placeholder="e.g. Noun, Verb">
+                            <button class="chunky-btn green-btn btn-sm" id="btn-add-category" style="padding: 10px 15px;">Add</button>
+                        </div>
+                        <div id="category-tags" style="display:flex; flex-wrap:wrap; gap:8px; max-height: 100px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+
                 <!-- BLOCK 2: Data Entry -->
                 <div class="settings-block">
                     <h3>➕ Create or Edit Challenge Item</h3>
@@ -480,8 +496,7 @@
                     <div class="form-group">
                         <label for="input-category">Sorting Category</label>
                         <select id="input-category">
-                            <option value="trash">🗑️ Trash</option>
-                            <option value="recycle">♻️ Recycle</option>
+                            <!-- Populated dynamically via JS based on Category Settings -->
                         </select>
                     </div>
                     <div class="form-group">
@@ -582,10 +597,10 @@
          * STATE INITIALIZATION & CONSTANTS
          ************************************************************************/
         const DEFAULT_QUESTIONS = [
-            { id: 1, type: "spelling", category: "recycle", tokens: ["P", "a", "p", "e", "r"], answer: "Paper", image: "" },
-            { id: 2, type: "sentence", category: "recycle", tokens: ["Glass", "bottle"], answer: "Glass bottle", image: "" },
-            { id: 3, type: "sentence", category: "trash", tokens: ["Banana", "peel"], answer: "Banana peel", image: "" },
-            { id: 4, type: "spelling", category: "trash", tokens: ["S", "a", "n", "x", "i", "n", "g"], answer: "Sanxing", image: "" }
+            { id: 1, type: "spelling", category: "Recycle", tokens: ["P", "a", "p", "e", "r"], answer: "Paper", image: "" },
+            { id: 2, type: "sentence", category: "Recycle", tokens: ["Glass", "bottle"], answer: "Glass bottle", image: "" },
+            { id: 3, type: "sentence", category: "Trash", tokens: ["Banana", "peel"], answer: "Banana peel", image: "" },
+            { id: 4, type: "spelling", category: "Trash", tokens: ["S", "a", "n", "x", "i", "n", "g"], answer: "Sanxing", image: "" }
         ];
 
         // Bubble Color Palettes
@@ -598,8 +613,27 @@
             { bg: '#5f27cd', border: '#341f97', text: '#fff' },    // 5: Purple
             { bg: '#c8d6e5', border: '#8395a7', text: '#222f3e' }  // 6: Grey
         ];
+        
+        // Sorting Bin Theming Colors
+        const BIN_THEMES = [
+            { border: '#e74c3c', bg: 'rgba(231, 76, 60, 0.1)' },
+            { border: '#2ecc71', bg: 'rgba(46, 204, 113, 0.1)' },
+            { border: '#3498db', bg: 'rgba(52, 152, 219, 0.1)' },
+            { border: '#f1c40f', bg: 'rgba(241, 196, 15, 0.1)' },
+            { border: '#9b59b6', bg: 'rgba(155, 89, 182, 0.1)' },
+            { border: '#e67e22', bg: 'rgba(230, 126, 34, 0.1)' }
+        ];
 
         let questionPool = JSON.parse(localStorage.getItem("jungle_game_pool")) || DEFAULT_QUESTIONS;
+        let gameCategories = JSON.parse(localStorage.getItem("jungle_game_categories")) || ["Trash", "Recycle"];
+        let penaltySeconds = parseInt(localStorage.getItem("jungle_game_penalty")) || 3;
+        
+        // Backwards compatibility for old saved JSONs that used lowercase categories
+        questionPool.forEach(q => {
+            if (q.category === "trash") q.category = "Trash";
+            if (q.category === "recycle") q.category = "Recycle";
+        });
+
         let isTeamMode = true; // DEFAULT is Team Mode
         let syncQuestions = true;
         let questionsPerMatch = parseInt(localStorage.getItem("jungle_game_q_count")) || 5;
@@ -659,11 +693,12 @@
          ************************************************************************/
         window.addEventListener('DOMContentLoaded', () => {
             initDOMEvents();
-            setupSortingDragAndDrop('left');
+            setupSortingDragAndDrop('left'); // Connects touch events to draggable-word
             setupSortingDragAndDrop('right');
             loadRulesFromStorage();
             applyBackgrounds();
             renderSettingsUI();
+            renderCategoriesSettings();
             setupPasteFeature();
             
             window.addEventListener('resize', () => {
@@ -707,6 +742,7 @@
             if(githubBaseUrl) document.getElementById('input-github-url').value = githubBaseUrl;
             
             document.getElementById('input-questions-per-match').value = questionsPerMatch;
+            document.getElementById('input-penalty-secs').value = penaltySeconds;
             if(hpData.bg && !hpData.bg.startsWith('data:')) document.getElementById('hp-bg-url').value = hpData.bg;
         }
 
@@ -722,6 +758,8 @@
                 localStorage.setItem("jungle_game_pool", JSON.stringify(questionPool)); 
                 localStorage.setItem("jungle_game_sync", syncQuestions); 
                 localStorage.setItem("jungle_game_q_count", questionsPerMatch);
+                localStorage.setItem("jungle_game_penalty", penaltySeconds);
+                localStorage.setItem("jungle_game_categories", JSON.stringify(gameCategories));
             } catch(e) { alert("Storage limit warning! Try using smaller pictures."); }
             renderSettingsUI();
         }
@@ -766,6 +804,10 @@
             currentMatchFinished = false;
             gameActive = false; 
             
+            // Build Dynamic Drop Zones for this match
+            renderDropZones('left');
+            renderDropZones('right');
+
             document.getElementById('match-start-overlay').style.display = 'flex';
             document.getElementById('app-container').classList.remove('game-on');
             document.getElementById('controls-left').style.display = 'none';
@@ -801,7 +843,7 @@
                 zoneRight.style.display = 'flex';
                 modeBadgeLeft.innerText = isTournamentMode ? modeBadgeLeft.innerText : "Team 1";
                 modeBadgeRight.innerText = isTournamentMode ? modeBadgeRight.innerText : "Team 2";
-                titleText.innerText = isTournamentMode ? titleText.innerText : "Connect Race";
+                titleText.innerText = isTournamentMode ? titleText.innerText : "Connect and Sort Activity";
                 document.getElementById('score-left').innerText = "RACE!";
                 document.getElementById('score-right').innerText = "RACE!";
                 toggleBtn.innerText = "👤 Switch to Solo";
@@ -820,6 +862,7 @@
         function initTournament() {
             const numTeams = parseInt(document.getElementById('input-num-teams').value);
             questionsPerMatch = parseInt(document.getElementById('input-questions-per-match').value) || 5;
+            penaltySeconds = parseInt(document.getElementById('input-penalty-secs').value) || 3;
             savePoolToStorage();
             
             document.getElementById('settings-panel').style.display = 'none';
@@ -938,7 +981,7 @@
             overlay.classList.add('active');
             AudioFX.fail();
             
-            let timeLeft = 3;
+            let timeLeft = penaltySeconds;
             timerEl.innerText = timeLeft;
             
             const interval = setInterval(() => {
@@ -1271,7 +1314,7 @@
                 AudioFX.success();
                 const dragWord = document.getElementById(`draggable-word-${side}`);
                 dragWord.innerText = currentQuestion.answer;
-                dragWord.dataset.category = currentQuestion.category || "trash";
+                dragWord.dataset.category = currentQuestion.category || "Trash"; // Fallback to avoid undef
                 document.getElementById(`sorting-overlay-${side}`).classList.add('active');
             } else {
                 triggerPenalty(side, "Wrong Sequence!");
@@ -1279,34 +1322,59 @@
         }
 
         /************************************************************************
-         * DUAL SMARTBOARD DRAG-AND-DROP
+         * DYNAMIC DROP ZONES RENDERING
+         ************************************************************************/
+        function renderDropZones(side) {
+            const container = document.getElementById(`drop-zones-${side}`);
+            if(!container) return;
+            container.innerHTML = '';
+            const dragWord = document.getElementById(`draggable-word-${side}`);
+            
+            gameCategories.forEach((cat, idx) => {
+                const theme = BIN_THEMES[idx % BIN_THEMES.length];
+                const zone = document.createElement('div');
+                zone.className = 'drop-zone';
+                zone.dataset.side = side;
+                zone.dataset.type = cat;
+                zone.innerText = cat;
+                zone.style.borderColor = theme.border;
+                zone.style.color = theme.border;
+                zone.style.backgroundColor = theme.bg;
+
+                // Desktop Drag Events
+                zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.style.background = 'rgba(255, 255, 255, 0.5)'; });
+                zone.addEventListener('dragleave', (e) => { zone.style.background = theme.bg; });
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.style.background = theme.bg;
+                    processDrop(zone, dragWord, side);
+                });
+
+                container.appendChild(zone);
+            });
+        }
+
+        /************************************************************************
+         * DUAL SMARTBOARD DRAG-AND-DROP (TOUCH)
          ************************************************************************/
         function setupSortingDragAndDrop(side) {
             const dragWord = document.getElementById(`draggable-word-${side}`);
-            const dropZones = document.querySelectorAll(`.drop-zone[data-side="${side}"]`);
 
+            // Desktop Dragstart
             dragWord.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', e.target.innerText); setTimeout(() => e.target.style.opacity = '0.5', 0); });
             dragWord.addEventListener('dragend', (e) => { e.target.style.opacity = '1'; });
 
-            dropZones.forEach(zone => {
-                zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.style.background = 'rgba(255, 255, 255, 0.5)'; });
-                zone.addEventListener('dragleave', (e) => { zone.style.background = zone.dataset.type === 'trash' ? 'rgba(231, 76, 60, 0.1)' : 'rgba(46, 204, 113, 0.1)'; });
-                zone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    zone.style.background = zone.dataset.type === 'trash' ? 'rgba(231, 76, 60, 0.1)' : 'rgba(46, 204, 113, 0.1)';
-                    processDrop(zone, dragWord, side);
-                });
-            });
-
+            // Touch Dragging Events
             let isDragging = false, startX, startY, initialX, initialY;
             dragWord.addEventListener('touchstart', (e) => {
+                if(e.cancelable) e.preventDefault();
                 isDragging = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY;
                 initialX = dragWord.offsetLeft; initialY = dragWord.offsetTop;
                 dragWord.style.position = 'absolute'; dragWord.style.zIndex = '1000';
             }, {passive: false});
 
             dragWord.addEventListener('touchmove', (e) => {
-                if(!isDragging) return; e.preventDefault();
+                if(!isDragging) return; if(e.cancelable) e.preventDefault();
                 dragWord.style.left = initialX + (e.touches[0].clientX - startX) + 'px';
                 dragWord.style.top = initialY + (e.touches[0].clientY - startY) + 'px';
             }, {passive: false});
@@ -1326,10 +1394,16 @@
         function processDrop(zone, dragWord, side) {
             const targetCategory = dragWord.dataset.category;
             const droppedCategory = zone.dataset.type;
-            document.getElementById(`sorting-overlay-${side}`).classList.remove('active');
-
-            if(targetCategory === droppedCategory) { AudioFX.success(); advanceChallengeIndex(side); } 
-            else { triggerPenalty(side, "Wrong Bin!"); }
+            
+            if(targetCategory === droppedCategory) { 
+                document.getElementById(`sorting-overlay-${side}`).classList.remove('active');
+                AudioFX.success(); 
+                advanceChallengeIndex(side); 
+            } else { 
+                // Wrong bin visually rejects it but does not apply full game penalty.
+                // You can add a triggerPenalty() here if you want dropping in the wrong bin to penalize time.
+                AudioFX.fail();
+            }
         }
 
         /************************************************************************
@@ -1391,6 +1465,7 @@
             document.getElementById('btn-start-app').addEventListener('click', () => {
                 document.getElementById('homepage-screen').classList.add('hidden');
                 questionsPerMatch = parseInt(document.getElementById('input-questions-per-match').value) || 5;
+                penaltySeconds = parseInt(document.getElementById('input-penalty-secs').value) || 3;
                 syncQuestions = document.getElementById('sync-toggle').checked;
                 availableQuestions = []; preparePools(); applyLayoutUIModes();
             });
@@ -1450,6 +1525,7 @@
             document.getElementById('btn-close-settings').addEventListener('click', () => {
                 syncQuestions = document.getElementById('sync-toggle').checked; 
                 questionsPerMatch = parseInt(document.getElementById('input-questions-per-match').value) || 5;
+                penaltySeconds = parseInt(document.getElementById('input-penalty-secs').value) || 3;
                 savePoolToStorage();
                 document.getElementById('settings-panel').style.display = 'none';
                 
@@ -1471,6 +1547,51 @@
         /************************************************************************
          * TEACHER SETTINGS OPERATIONS & UI 
          ************************************************************************/
+        function renderCategoriesSettings() {
+            const container = document.getElementById('category-tags');
+            container.innerHTML = '';
+            gameCategories.forEach((cat, idx) => {
+                const tag = document.createElement('div');
+                tag.style.cssText = "background: rgba(255,255,255,0.1); border: 2px solid var(--accent-gold); padding: 5px 12px; border-radius: 20px; display:flex; align-items:center; gap:8px;";
+                tag.innerHTML = `
+                    <span style="font-weight:bold; color:#fff; font-size:14px;">${cat}</span>
+                    <span style="cursor:pointer; color:#e74c3c; font-weight:900; font-size:16px;" onclick="deleteCategory(${idx})">✖</span>
+                `;
+                container.appendChild(tag);
+            });
+
+            // Update the select dropdown in the Add Question block
+            const select = document.getElementById('input-category');
+            select.innerHTML = '';
+            gameCategories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.innerText = cat;
+                select.appendChild(opt);
+            });
+        }
+
+        window.deleteCategory = function(idx) {
+            if(gameCategories.length <= 1) { alert("You must have at least one sorting category."); return; }
+            const removed = gameCategories.splice(idx, 1)[0];
+            // Auto-assign orphans to the first available category
+            questionPool.forEach(q => { if(q.category === removed) q.category = gameCategories[0]; });
+            savePoolToStorage();
+            renderCategoriesSettings();
+        };
+
+        document.getElementById('btn-add-category').addEventListener('click', () => {
+            const val = document.getElementById('new-category-name').value.trim();
+            if(val && !gameCategories.includes(val)) {
+                gameCategories.push(val);
+                document.getElementById('new-category-name').value = '';
+                savePoolToStorage();
+                renderCategoriesSettings();
+            } else if (gameCategories.includes(val)) {
+                alert("This category already exists!");
+            }
+        });
+
         function setupPasteFeature() {
             const pasteZone = document.getElementById('image-paste-zone');
             pasteZone.addEventListener('paste', (e) => {
@@ -1509,7 +1630,7 @@
             container.innerHTML = ''; document.getElementById('pool-count-label').innerText = questionPool.length;
 
             const sortedPool = [...questionPool].sort((a, b) => {
-                const catA = a.category || "trash", catB = b.category || "trash";
+                const catA = a.category || "Trash", catB = b.category || "Trash";
                 return catA.localeCompare(catB) || a.type.localeCompare(b.type);
             });
 
@@ -1517,12 +1638,11 @@
                 const originalIndex = questionPool.findIndex(item => item.id === q.id);
                 const tr = document.createElement('tr');
                 let imgThumbHtml = q.image ? `<img src="${q.image}" style="max-height:40px; border-radius:6px; box-shadow: 0 2px 4px rgba(0,0,0,0.5);">` : 'N/A';
-                let catIcon = (q.category === 'trash') ? '🗑️ Trash' : '♻️ Recycle';
                 
                 tr.innerHTML = `
                     <td>${imgThumbHtml}</td>
                     <td><span style="background:var(--primary-dark); padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">${q.type.toUpperCase()}</span></td>
-                    <td style="font-weight:bold;">${catIcon}</td>
+                    <td style="font-weight:bold;">${q.category || 'N/A'}</td>
                     <td><strong style="color:var(--accent-gold); font-size:18px;">${q.answer}</strong></td>
                     <td style="display:flex; gap:8px;">
                         <button class="chunky-btn btn-sm" style="background:#3498db; box-shadow:0 4px 0 #2980b9;" onclick="editQuestionItemByIndex(${originalIndex})">Edit</button>
@@ -1536,7 +1656,11 @@
         window.editQuestionItemByIndex = function(originalIndex) {
             const q = questionPool[originalIndex];
             document.getElementById('input-type').value = q.type;
-            document.getElementById('input-category').value = q.category || 'trash';
+            
+            // Re-render select options just in case, then set value
+            renderCategoriesSettings();
+            document.getElementById('input-category').value = q.category || gameCategories[0];
+            
             document.getElementById('input-content').value = q.answer;
             
             if(q.image) {
@@ -1600,6 +1724,12 @@
                 if(!response.ok) throw new Error("Could not find sort.json at this URL.");
                 let data = await response.json();
                 
+                // Sanitize old data categories just in case
+                data.forEach(q => {
+                    if (q.category === "trash") q.category = "Trash";
+                    if (q.category === "recycle") q.category = "Recycle";
+                });
+                
                 questionPool = data;
                 githubBaseUrl = url;
                 localStorage.setItem("jungle_game_github", url);
@@ -1620,14 +1750,22 @@
                 localStorage.removeItem("jungle_game_github");
                 localStorage.removeItem("jungle_game_hp");
                 localStorage.removeItem("jungle_game_q_count");
+                localStorage.removeItem("jungle_game_penalty");
+                localStorage.removeItem("jungle_game_categories");
                 githubBaseUrl = "";
                 hpData = { bg: "" };
                 
                 document.getElementById('input-github-url').value = "";
                 document.getElementById('hp-bg-url').value = "";
                 questionsPerMatch = 5;
+                penaltySeconds = 3;
+                gameCategories = ["Trash", "Recycle"];
                 questionPool = [...DEFAULT_QUESTIONS];
-                savePoolToStorage(); applyBackgrounds(); goHome();
+                
+                savePoolToStorage(); 
+                applyBackgrounds(); 
+                goHome();
+                renderCategoriesSettings();
             }
         }
 
@@ -1646,7 +1784,16 @@
             readerInstance.onload = function(event) {
                 try {
                     const compiledData = JSON.parse(event.target.result);
-                    if(Array.isArray(compiledData)) { questionPool = compiledData; savePoolToStorage(); alert("Configuration synchronized successfully!"); } 
+                    if(Array.isArray(compiledData)) { 
+                        // Sanitize old data categories
+                        compiledData.forEach(q => {
+                            if (q.category === "trash") q.category = "Trash";
+                            if (q.category === "recycle") q.category = "Recycle";
+                        });
+                        questionPool = compiledData; 
+                        savePoolToStorage(); 
+                        alert("Configuration synchronized successfully!"); 
+                    } 
                     else { alert("Malformed JSON data."); }
                 } catch(error) { alert("Failure parsing data: " + error.message); }
             };
