@@ -1,0 +1,438 @@
+[
+  {
+    "id": 1782536749420.4094,
+    "type": "spelling",
+    "category": "Recycle",
+    "tokens": [
+      "b",
+      "o",
+      "t",
+      "t",
+      "l",
+      "e",
+      "s"
+    ],
+    "answer": "bottles",
+    "image": ""
+  },
+  {
+    "id": 1782536793253.121,
+    "type": "spelling",
+    "category": "Recycle",
+    "tokens": [
+      "c",
+      "a",
+      "n",
+      "s"
+    ],
+    "answer": "cans",
+    "image": ""
+  },
+  {
+    "id": 1782536796410.5579,
+    "type": "spelling",
+    "category": "Recycle",
+    "tokens": [
+      "p",
+      "a",
+      "p",
+      "e",
+      "r",
+      "s"
+    ],
+    "answer": "papers",
+    "image": ""
+  },
+  {
+    "id": 1782536811046.375,
+    "type": "spelling",
+    "category": "Recycle",
+    "tokens": [
+      "m",
+      "a",
+      "g",
+      "a",
+      "z",
+      "i",
+      "n",
+      "e"
+    ],
+    "answer": "magazine",
+    "image": ""
+  },
+  {
+    "id": 1782537016872.655,
+    "type": "spelling",
+    "category": "Recycle",
+    "tokens": [
+      "c",
+      "a",
+      "r",
+      "d",
+      "b",
+      "o",
+      "a",
+      "r",
+      "d"
+    ],
+    "answer": "cardboard",
+    "image": ""
+  },
+  {
+    "id": 1782537049093.9631,
+    "type": "spelling",
+    "category": "Recycle",
+    "tokens": [
+      "j",
+      "a",
+      "r",
+      "s"
+    ],
+    "answer": "jars",
+    "image": ""
+  },
+  {
+    "id": 1782537083297.4617,
+    "type": "spelling",
+    "category": "Trash",
+    "tokens": [
+      "n",
+      "a",
+      "p",
+      "k",
+      "i",
+      "n",
+      "s"
+    ],
+    "answer": "napkins",
+    "image": ""
+  },
+  {
+    "id": 1782537089977.064,
+    "type": "spelling",
+    "category": "Trash",
+    "tokens": [
+      "t",
+      "i",
+      "s",
+      "s",
+      "u",
+      "e",
+      "s"
+    ],
+    "answer": "tissues",
+    "image": ""
+  },
+  {
+    "id": 1782537198018.7336,
+    "type": "spelling",
+    "category": "Trash",
+    "tokens": [
+      "b",
+      "u",
+      "b",
+      "b",
+      "l",
+      "e",
+      "g",
+      "u",
+      "m"
+    ],
+    "answer": "bubblegum",
+    "image": ""
+  },
+  {
+    "id": 1782537248461.5547,
+    "type": "spelling",
+    "category": "Recycle",
+    "tokens": [
+      "g",
+      "l",
+      "a",
+      "s",
+      "s"
+    ],
+    "answer": "glass",
+    "image": ""
+  },
+  {
+    "id": 1782537258044.1055,
+    "type": "spelling",
+    "category": "Recycle",
+    "tokens": [
+      "m",
+      "e",
+      "t",
+      "a",
+      "l"
+    ],
+    "answer": "metal",
+    "image": ""
+  },
+  {
+    "id": 1782537266824.8872,
+    "type": "spelling",
+    "category": "Recycle",
+    "tokens": [
+      "p",
+      "l",
+      "a",
+      "s",
+      "t",
+      "i",
+      "c"
+    ],
+    "answer": "plastic",
+    "image": ""
+  },
+  {
+    "id": 1782537285636.9182,
+    "type": "spelling",
+    "category": "Recycle",
+    "tokens": [
+      "n",
+      "e",
+      "w",
+      "s",
+      "p",
+      "a",
+      "p",
+      "e",
+      "r",
+      "s"
+    ],
+    "answer": "newspapers",
+    "image": ""
+  },
+  {
+    "id": 1782537314574.4612,
+    "type": "spelling",
+    "category": "Trash",
+    "tokens": [
+      "d",
+      "i",
+      "a",
+      "p",
+      "e",
+      "r",
+      "s"
+    ],
+    "answer": "diapers",
+    "image": ""
+  },
+  {
+    "id": 1782537325799.2615,
+    "type": "spelling",
+    "category": "Trash",
+    "tokens": [
+      "h",
+      "a",
+      "i",
+      "r"
+    ],
+    "answer": "hair",
+    "image": ""
+  },
+  {
+    "id": 1782537339778.8584,
+    "type": "spelling",
+    "category": "Trash",
+    "tokens": [
+      "d",
+      "u",
+      "s",
+      "t"
+    ],
+    "answer": "dust",
+    "image": ""
+  },
+  {
+    "id": 1782537347679.7249,
+    "type": "spelling",
+    "category": "Trash",
+    "tokens": [
+      "d",
+      "i",
+      "r",
+      "t"
+    ],
+    "answer": "dirt",
+    "image": ""
+  },
+  {
+    "id": 1782537500975.3945,
+    "type": "sentence",
+    "category": "Recycle",
+    "tokens": [
+      "I",
+      "found",
+      "an",
+      "empty",
+      "water",
+      "bottle."
+    ],
+    "answer": "I found an empty water bottle.",
+    "image": ""
+  },
+  {
+    "id": 1782537513217.36,
+    "type": "sentence",
+    "category": "Trash",
+    "tokens": [
+      "The",
+      "paper",
+      "napkin",
+      "is",
+      "dirty."
+    ],
+    "answer": "The paper napkin is dirty.",
+    "image": ""
+  },
+  {
+    "id": 1782537524811.8406,
+    "type": "sentence",
+    "category": "Recycle",
+    "tokens": [
+      "We",
+      "have",
+      "a",
+      "clean",
+      "cardboard",
+      "box."
+    ],
+    "answer": "We have a clean cardboard box.",
+    "image": ""
+  },
+  {
+    "id": 1782537532881.2002,
+    "type": "sentence",
+    "category": "Trash",
+    "tokens": [
+      "I",
+      "chewed",
+      "this",
+      "sweet",
+      "gum."
+    ],
+    "answer": "I chewed this sweet gum.",
+    "image": ""
+  },
+  {
+    "id": 1782537545783.9211,
+    "type": "sentence",
+    "category": "Recycle",
+    "tokens": [
+      "The",
+      "glass",
+      "jar",
+      "is",
+      "empty."
+    ],
+    "answer": "The glass jar is empty.",
+    "image": ""
+  },
+  {
+    "id": 1782537566047.8325,
+    "type": "sentence",
+    "category": "Trash",
+    "tokens": [
+      "This",
+      "candy",
+      "wrapper",
+      "is",
+      "very",
+      "sticky."
+    ],
+    "answer": "This candy wrapper is very sticky.",
+    "image": ""
+  },
+  {
+    "id": 1782537577657.599,
+    "type": "sentence",
+    "category": "Recycle",
+    "tokens": [
+      "Here",
+      "is",
+      "an",
+      "old",
+      "newspaper."
+    ],
+    "answer": "Here is an old newspaper.",
+    "image": ""
+  },
+  {
+    "id": 1782537608764.8894,
+    "type": "sentence",
+    "category": "Trash",
+    "tokens": [
+      "I",
+      "just",
+      "used",
+      "this",
+      "wet",
+      "baby",
+      "wipe."
+    ],
+    "answer": "I just used this wet baby wipe.",
+    "image": ""
+  },
+  {
+    "id": 1782537618229.4229,
+    "type": "sentence",
+    "category": "Recycle",
+    "tokens": [
+      "Please",
+      "wash",
+      "this",
+      "empty",
+      "soda",
+      "can."
+    ],
+    "answer": "Please wash this empty soda can.",
+    "image": ""
+  },
+  {
+    "id": 1782537664017.1692,
+    "type": "sentence",
+    "category": "Recycle",
+    "tokens": [
+      "I",
+      "like",
+      "reading",
+      "this",
+      "magazine."
+    ],
+    "answer": "I like reading this magazine.",
+    "image": ""
+  },
+  {
+    "id": 1782537684648.7458,
+    "type": "sentence",
+    "category": "Trash",
+    "tokens": [
+      "Sweeping",
+      "the",
+      "dirty",
+      "floor",
+      "gathers",
+      "dust."
+    ],
+    "answer": "Sweeping the dirty floor gathers dust.",
+    "image": ""
+  },
+  {
+    "id": 1782537696399.8367,
+    "type": "sentence",
+    "category": "Trash",
+    "tokens": [
+      "Please",
+      "drop",
+      "the",
+      "used",
+      "tissues",
+      "here."
+    ],
+    "answer": "Please drop the used tissues here.",
+    "image": ""
+  }
+]
