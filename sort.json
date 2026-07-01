@@ -411,13 +411,12 @@
     "category": "Trash",
     "tokens": [
       "Sweeping",
+      "clears",
+      "away",
       "the",
-      "dirty",
-      "floor",
-      "gathers",
       "dust."
     ],
-    "answer": "Sweeping the dirty floor gathers dust.",
+    "answer": "Sweeping clears away the dust.",
     "image": ""
   },
   {
